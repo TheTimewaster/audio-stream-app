@@ -12,7 +12,7 @@
 			function streamSong()
 			{
 				var request = new XMLHTTPServlet();+
-				request.open("GET","http:localhost:8080/stream_now");
+				request.open("GET","/stream_now");
 
 				request.onload = function()
 				{
