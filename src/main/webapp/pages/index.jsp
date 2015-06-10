@@ -7,31 +7,33 @@
 
 		<script type="text/javascript">
 			window.AudioContext = window.AudioContext||window.webkitAudioContext;
-			context = new AudioContext()
+			context = new AudioContext();
 
 			function streamSong()
 			{
-				var request = new XMLHTTPServlet();+
-				request.open("GET","/stream_now");
+				var request = new XMLHttpRequest();
+				request.open("GET","/stream_now", true);
+				request.responseType = "arraybuffer"; 
 
 				request.onload = function()
 				{
 					var Data = request.response;
-					process(Data);
-				}
+					processData(Data);
+				};
 
-				request.send;
+				request.send();
 			}
 
 			function processData(Data)
 			{
 				source = context.createBufferSource();
-				context.decodeAudioData(Data, function(buffer))
+				context.decodeAudioData(Data, function(buffer)
 				{
+					console.log("asdf");
 					source.buffer = buffer;
 					source.connect(context.destination);
-					source.start(context.currentTime);
-				}
+					source.start(0);
+				});
 			}
 		</script>
 	</body>

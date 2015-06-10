@@ -1,0 +1,22 @@
+{
+  "name": "audio-stream-app",
+  "version": "0.0.1",
+  "description": "This is my test project",
+  "main": "index.html",
+  "authors": [
+    "Tu Hoang Thanh"
+  ],
+  "license": "Apache License 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~1.0.3",
+    "paper-button": "PolymerElements/paper-button#1.0.1",
+    "paper-styles": "PolymerElements/paper-styles#1.0.0"
+  }
+}
