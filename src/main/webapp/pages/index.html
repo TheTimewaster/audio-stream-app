@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-		<link rel="import" href="bower_components/polymer/polymer.html">
-		<link rel="import" href="bower_components/paper-styles/paper-styles.html">
-		<link rel="import" href="bower_components/paper-button/paper-button.html">
+		<script src="pages/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+		<link rel="import" href="pages/bower_components/polymer/polymer.html">
+		<link rel="import" href="pages/bower_components/paper-styles/paper-styles.html">
+		<link rel="import" href="pages/bower_components/paper-button/paper-button.html">
+		<link rel="import" href="pages/bower_components/iron-ajax/iron-ajax.html">
 		<style type="text/css">
 		body,html
 		{
 			    height: 100%;
 			    margin: 0;
-			    background-color: #E5E5E5;
+			    background-color: #FAFAFA;
 			    font-family: 'Roboto Light', sans-serif;
 		}
 		h2
@@ -20,48 +21,40 @@
 		</style>
 	</head>
 	<body>
+		<iron-ajax auto url="/api/metadata/getDocument" handle-as="json">
 		<template is="dom-bind" id="app">
-				<h2>Hello World!</h2>
-				<paper-button on-click="clickToPlayHandler">
-				play now!
-				</paper-button>
-			</template>
+			<h2>Hello World!</h2>
+			<paper-button on-click="clickToPlayHandler">
+			play now!
+			</paper-button>
+			<paper-button on-click="clickToPlayNextHandler">
+			play next!
+			</paper-button>
+			<audio id="player" controls>
+				<source id="source" src="/api/stream/stream_now" type="audio/mpeg" codecs="mp3"/>
+			</audio>
+		</template>
 		<script type="text/javascript">
+		"use strict";
 			window.AudioContext = window.AudioContext||window.webkitAudioContext;
-			context = new AudioContext();
+			var context = new AudioContext();
 
-			var app = document.querySelector('#app');
+			(function()
+			{
+				var app = document.querySelector('#app');
+				var player = document.querySelector('#player');
+			});
 
 			app.clickToPlayHandler = function()
 			{
-				streamSong();
+				player.play();
 			}
 
-			function streamSong()
+			app.clickToPlayNextHandler = function()
 			{
-				var request = new XMLHttpRequest();
-				request.open("GET","/stream_now", true);
-				request.responseType = "arraybuffer"; 
-
-				request.onload = function()
-				{
-					var Data = request.response;
-					processData(Data);
-				};
-
-				request.send();
-			}
-
-			function processData(Data)
-			{
-				source = context.createBufferSource();
-				context.decodeAudioData(Data, function(buffer)
-				{
-					console.log("asdf");
-					source.buffer = buffer;
-					source.connect(context.destination);
-					source.start(0);
-				});
+				document.querySelector('#source').setAttribute("src","api/stream/next_song");
+				player.load();
+				player.play();
 			}
 		</script>
 	</body>

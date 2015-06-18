@@ -4,31 +4,39 @@
                 http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
 
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>audio-stream-app</display-name>
   <description></description>
   <welcome-file-list>
 	  <welcome-file>
-	  	index.jsp
+	  	pages/index.html
 	  </welcome-file>
   </welcome-file-list>
+  
   <servlet>
-  	<servlet-name>audio-stream</servlet-name>
-  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  	<load-on-startup>1</load-on-startup>
+   	<servlet-name>jersey-serlvet</servlet-name>
+	<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+	<init-param>
+	     <param-name>jersey.config.server.provider.packages</param-name>
+	     <param-value>hoang.server</param-value>
+	</init-param>
+	<load-on-startup>2</load-on-startup>
   </servlet>
+  
+    <!-- <servlet>
+	  	<servlet-name>meta-data</servlet-name>
+	  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	  	<load-on-startup>1</load-on-startup>
+	  </servlet> -->
+  	
  
   	<servlet-mapping>
-		<servlet-name>audio-stream</servlet-name>
-		<url-pattern>/stream_now</url-pattern>
+		<servlet-name>jersey-serlvet</servlet-name>
+		<url-pattern>/api/*</url-pattern>
 	</servlet-mapping>
+	
+  	<!-- <servlet-mapping>
+  	    <servlet-name>meta-data</servlet-name>
+  	    <url-pattern>/metadata/getDocument</url-pattern>
+  	</servlet-mapping> -->
 
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/audio-stream-servlet.xml</param-value>
-	</context-param>
-
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-  
 </web-app>

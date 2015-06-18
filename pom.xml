@@ -33,6 +33,22 @@
 	    <version>3.0.1</version>
 	    <scope>provided</scope>
 	</dependency>
+	<dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver</artifactId>
+        <version>3.0.2</version>
+    </dependency>
+	<dependency>
+		<groupId>org.glassfish.jersey.containers</groupId>
+		<artifactId>jersey-container-servlet</artifactId>
+		<version>2.18</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.4</version>
+	</dependency>
+    
   </dependencies>
   <build>
     <finalName>app-audio-stream</finalName>
@@ -41,6 +57,9 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jettyVersion}</version>
+				<configuration>
+					<contextPath>/</contextPath> 
+				</configuration>
 			</plugin>
 		<plugin>
        <groupId>org.apache.maven.plugins</groupId>
