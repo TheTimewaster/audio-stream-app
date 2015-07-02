@@ -1,18 +1,21 @@
 package hoang.db;
 
 
-import hoang.files.SamplePathsToFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+import org.json.JSONArray;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -39,22 +42,99 @@ public class MongoDatabaseConnection
 		return mongoDB;
 	}
 
+//	@Deprecated
 	public String getAllDocumentsInCollection()
+	{
+		MongoCollection<Document> musicCollection = mongoDB
+		        .getCollection("db_album_metadata");
+		
+		MongoCursor<Document> cursor = musicCollection.find().iterator();
+		
+		JSONArray array = new JSONArray();
+
+		try
+		{	
+			while(cursor.hasNext())
+			{				
+				Document doc = cursor.next();
+//				System.out.println(doc.toJson(new DocumentCodec()));
+				
+				Document document = new Document();
+				for(String s : doc.keySet())
+				{
+					if(s.equals("_id"))
+					{
+						document.put(s, doc.get(s).toString());
+					}
+					else
+					{
+						document.put(s, doc.get(s));
+					}
+				}
+				
+				array.put(document);
+			}
+			
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+
+		} finally
+		{
+			cursor.close();
+			client.close();
+		}
+
+		return array.toString();
+	}
+	
+	public String getAllAlbumsFromCollection()
+	{
+		MongoCollection<Document> musicCollection = mongoDB
+		        .getCollection("db_album_metadata");
+		
+		Bson eq = new BasicDBObject("tracks",0);
+		
+		MongoCursor<Document> cursor = musicCollection.find().projection(eq).iterator();
+		
+		try
+		{	
+			while(cursor.hasNext())
+			{
+				Document doc = cursor.next();
+				System.out.println(doc.toJson());
+			}
+			
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+
+		} finally
+		{
+			cursor.close();
+			client.close();
+		}
+		
+		return "";
+	}
+	
+	public String getDocumentInCollection(String _objectID)
 	{
 		String returnJSONString = "";
 
 		MongoCollection<Document> musicCollection = mongoDB
 		        .getCollection("db_album_metadata");
-
-		MongoCursor<Document> cursor = musicCollection.find().iterator();
+		
+		MongoIterable<Document> iterable = musicCollection.find(new BasicDBObject("_id", _objectID));
+		
+		MongoCursor<Document> cursor = iterable.iterator();
 
 		try
 		{
-
 			while (cursor.hasNext())
 			{
-				String document = cursor.next().toJson();
-				returnJSONString = "\n" + document;
+				Document doc = cursor.next();
+				returnJSONString = doc.toJson();
 			}
 		} catch (Exception e)
 		{
@@ -71,17 +151,17 @@ public class MongoDatabaseConnection
 	
 	public InputStream getFirstFileFromMongoDB()
 	{
-		return getFileFromMongoDB("sample");
+		return getFileFromMongoDB("5580899e8c95fd101838af9d");
 	}
 
-	public InputStream getFileFromMongoDB(String _fileName)
+	public InputStream getFileFromMongoDB(String _objectID)
 	{
 		GridFS fs = new GridFS(client.getDB("music"), "db_files");
-		GridFSDBFile outputFile = fs.findOne(_fileName);
+		GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
 		return outputFile.getInputStream();
 	}
 
-	public void putFileInMongoDB(String _fileName, String _fullPath)
+	public void putFileInMongoDB(String _fullPath)
 	{
 		@SuppressWarnings("deprecation")
 		// replace with new GridFS-API when mongodb-driver 3.1 is available!
@@ -92,39 +172,12 @@ public class MongoDatabaseConnection
 		try
 		{
 			inputFile = fs.createFile(file);
-			inputFile.setFilename(_fileName);
+			inputFile.setFilename(file.getName());
 			inputFile.save();
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	public static void main(String[] args)
-	{
-		MongoDatabaseConnection conn = new MongoDatabaseConnection(
-		        DEFAULT_MONGO_HOST, DEFAULT_MONGO_PORT, "music");
-
-		switch (args[0])
-		{
-		case "-o":
-			System.out.println(conn.getAllDocumentsInCollection());
-			break;
-		case "-i":
-			if (args.length != 1)
-			{
-				conn.putFileInMongoDB(args[1], args[2]);
-			} else
-			{
-				System.out
-				        .println("No input file found! Put sample file instead");
-				conn.putFileInMongoDB("sample",SamplePathsToFile.PATH_TO_FILE);
-			}
-			break;
-		default:
-			System.out.println(conn.getAllDocumentsInCollection());
-			break;
 		}
 	}
 }

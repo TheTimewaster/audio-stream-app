@@ -18,12 +18,26 @@
 		{
 			font-size: 30px;
 		}
+		.album-card
+		{
+			width: 800px;
+			height: 200px;
+		}
 		</style>
 	</head>
 	<body>
-		<iron-ajax auto url="/api/metadata/getDocument" handle-as="json">
 		<template is="dom-bind" id="app">
-			<h2>Hello World!</h2>
+			<iron-ajax id="ajax" auto url="/api/metadata/getDocument" handle-as="json" last-response="{{data}}"></iron-ajax>
+			<h2>Audio Stream App</h2>
+			<template is="dom-repeat" items="{{data}}">
+				<div class="album-card -shadow-elevation-2dp">
+					<h1>{{item.album}}</h1>
+					<h3>{{item.artist}}</h3>
+					<template is="dom-repeat" items="{{item.tracks}}">
+						<p><span>{{item.name}}</span></p>
+					</template>
+				</div>
+			</template>
 			<paper-button on-click="clickToPlayHandler">
 			play now!
 			</paper-button>
@@ -31,11 +45,12 @@
 			play next!
 			</paper-button>
 			<audio id="player" controls>
-				<source id="source" src="/api/stream/stream_now" type="audio/mpeg" codecs="mp3"/>
+				<source id="source" src="/api/stream/5580899e8c95fd101838af9d" type="audio/mpeg" codecs="mp3"/>
 			</audio>
 		</template>
 		<script type="text/javascript">
 		"use strict";
+
 			window.AudioContext = window.AudioContext||window.webkitAudioContext;
 			var context = new AudioContext();
 
@@ -48,14 +63,24 @@
 			app.clickToPlayHandler = function()
 			{
 				player.play();
-			}
+			};
 
 			app.clickToPlayNextHandler = function()
 			{
-				document.querySelector('#source').setAttribute("src","api/stream/next_song");
+				document.querySelector('#source').setAttribute("src","api/stream/5594ed7e8c95fd1a94ea4241");
 				player.load();
 				player.play();
-			}
+			};
+
+			Polymer({
+				is:"app",
+				properties: data:Object,
+				validateDocumentResponse: function()
+				{
+					this.data = document.querySelector("#ajax").lastResponse;
+					console.log(data)
+				}
+			});
 		</script>
 	</body>
 </html>

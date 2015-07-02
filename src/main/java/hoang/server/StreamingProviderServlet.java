@@ -7,12 +7,12 @@ import hoang.db.MongoDatabaseConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -24,8 +24,6 @@ import org.apache.commons.io.IOUtils;
 @Path("/stream")
 public class StreamingProviderServlet
 {
-	private static final int	FILE_BUFFER	= 2048;
-
 	@Context
 	HttpServletRequest	     request;
 
@@ -33,18 +31,12 @@ public class StreamingProviderServlet
 	HttpServletResponse	     response;
 
 	@GET
-	@Path("/stream_now")
+	@Path("/{obj_id}")
 	@Produces("audio/mpeg")
-	public Response getFileFromDB()
+	public Response getFileFromDB(@PathParam(value = "obj_id") String _objID)
 	{
-		Enumeration<String> headers = request.getHeaderNames();
-		while (headers.hasMoreElements())
-		{
-			String element = headers.nextElement();
-			System.out.println(element + ":\t"
-			        + request.getHeader(element).toString());
-		}
-
+		//make this method better by responding with a HTTP 206
+		
 		// make better by implementing a config wrapper
 		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance()
 		        .getMongoDatabaseConnection(
@@ -63,7 +55,7 @@ public class StreamingProviderServlet
 			{
 				try
 				{
-					is = conn.getFirstFileFromMongoDB();
+					is = conn.getFileFromMongoDB(_objID);
 					IOUtils.copy(is, out);
 				} finally
 				{
