@@ -149,6 +149,7 @@ public class MongoDatabaseConnection
 		return returnJSONString;
 	}
 	
+	@Deprecated
 	public InputStream getFirstFileFromMongoDB()
 	{
 		return getFileFromMongoDB("5580899e8c95fd101838af9d");
@@ -159,6 +160,13 @@ public class MongoDatabaseConnection
 		GridFS fs = new GridFS(client.getDB("music"), "db_files");
 		GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
 		return outputFile.getInputStream();
+	}
+	
+	public int getContentLength(String _objectID)
+	{
+			GridFS fs = new GridFS(client.getDB("music"), "db_files");
+			GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
+			return (int) outputFile.getLength();		
 	}
 
 	public void putFileInMongoDB(String _fullPath)
