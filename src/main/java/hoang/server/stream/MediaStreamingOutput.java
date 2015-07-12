@@ -1,6 +1,5 @@
 package hoang.server.stream;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,20 +26,15 @@ public class MediaStreamingOutput implements AbstractStreamingOutput
 			WebApplicationException 
 	{
 		final byte[] buffer = new byte[4096];
-		System.out.println(start);
+		in.skip(start);
 		try
 		{
 			while(contentLength != 0)
 			{
-				int read = in.read(buffer, start, buffer.length > contentLength ? contentLength : buffer.length);
+				int read = in.read(buffer, 0, buffer.length > contentLength ? contentLength : buffer.length);
 				_out.write(buffer, 0, read);
 				contentLength -= read;
 			}
-		}
-		catch(EOFException e)
-		{
-			System.out.println("Client disconnected!");
-			//expected
 		}
 		finally
 		{
