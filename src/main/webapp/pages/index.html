@@ -1,86 +1,30 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="pages/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-		<link rel="import" href="pages/bower_components/polymer/polymer.html">
-		<link rel="import" href="pages/bower_components/paper-styles/paper-styles.html">
-		<link rel="import" href="pages/bower_components/paper-button/paper-button.html">
-		<link rel="import" href="pages/bower_components/iron-ajax/iron-ajax.html">
+		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+		<link rel="import" href="/custom_elements/album-list.html">
+		<link rel="import" href="/custom_elements/music-player.html">
+		<link rel="import" href="/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 		<style type="text/css">
 		body,html
 		{
-			    height: 100%;
-			    margin: 0;
-			    background-color: #FAFAFA;
-			    font-family: 'Roboto Light', sans-serif;
+	    height: 100%;
+	    margin: 0;
+	    background-color: #FAFAFA;
+	    font-family: 'Roboto Light', sans-serif;
 		}
-		h2
+		h1,h2,h3,h4,h5,h6
 		{
-			font-size: 30px;
-		}
-		.album-card
-		{
-			width: 800px;
-			height: 200px;
+			margin-top: 0px;
+			margin-bottom: 0px;
 		}
 		</style>
 	</head>
 	<body>
-		<template is="dom-bind" id="app">
-			<iron-ajax id="ajax" auto url="/api/metadata/getDocument" handle-as="json" last-response="{{data}}"></iron-ajax>
-			<h2>Audio Stream App</h2>
-			<template is="dom-repeat" items="{{data}}">
-				<div class="album-card -shadow-elevation-2dp">
-					<h1>{{item.album}}</h1>
-					<h3>{{item.artist}}</h3>
-					<template is="dom-repeat" items="{{item.tracks}}">
-						<p><span>{{item.name}}</span></p>
-					</template>
-				</div>
-			</template>
-			<paper-button on-click="clickToPlayHandler">
-			play now!
-			</paper-button>
-			<paper-button on-click="clickToPlayNextHandler">
-			play next!
-			</paper-button>
-			<audio id="player" controls>
-				<source id="source" src="/api/stream/5580899e8c95fd101838af9d" type="audio/mpeg" codecs="mp3"/>
-			</audio>
-		</template>
-		<script type="text/javascript">
-		"use strict";
-
-			window.AudioContext = window.AudioContext||window.webkitAudioContext;
-			var context = new AudioContext();
-
-			(function()
-			{
-				var app = document.querySelector('#app');
-				var player = document.querySelector('#player');
-			});
-
-			app.clickToPlayHandler = function()
-			{
-				player.play();
-			};
-
-			app.clickToPlayNextHandler = function()
-			{
-				document.querySelector('#source').setAttribute("src","api/stream/5594ed7e8c95fd1a94ea4241");
-				player.load();
-				player.play();
-			};
-
-			Polymer({
-				is:"app",
-				properties: data:Object,
-				validateDocumentResponse: function()
-				{
-					this.data = document.querySelector("#ajax").lastResponse;
-					console.log(data)
-				}
-			});
-		</script>
+		<paper-scroll-header-panel classs="flex">
+				Header
+		</paper-scroll-header-panel>
+		<album-list></album-list>
+		<music-player></music-player>
 	</body>
 </html>

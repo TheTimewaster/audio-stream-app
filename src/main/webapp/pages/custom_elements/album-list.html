@@ -1,0 +1,76 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<iron-ajax id="ajax" auto url="metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+<dom-module id="album-list">
+	<style type="text/css">
+		:host
+		{
+			width: 700px;
+			display: block;
+			padding-bottom: 40px;
+		}
+		.album-card
+		{
+			margin: 16px;
+			border-radius: 2px;
+			display: block;
+			width: auto;
+			padding-bottom: 16px;
+		}
+		.album-row
+		{
+			display: flex;
+			width: auto;
+		}
+		.album-row:hover
+		{
+			background-color: #E0E0E0;
+
+		}
+		.album-header
+		{
+			
+			display: inline-flex;
+		}
+		.album-cover
+		{
+			background-color: gray;
+			width: 200px;
+			height: 200px;
+		}
+		.album-title
+		{
+			margin: 16px;
+		}
+	</style>
+	<template>
+		<iron-ajax id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<template is="dom-repeat" items="{{data}}">
+			<paper-material class="album-card" elevation="1">
+				<div class="album-header">
+					<div class="album-cover"></div>
+					<div class="album-title">
+						<h1>{{item.album}}</h1>
+						<h3>{{item.artist}}</h3>
+					</div>
+				</div>
+				<template is="dom-repeat" items="{{item.tracks}}">
+					<paper-item class="album-row">
+						<div class="album-column" style="width:30px">{{item.track}}</div>
+						<div class="album-column" style="flex:1">{{item.name}}</div>
+						<div class="album-column" style="width:60px;">{{item.length}}</div>
+					</paper-item>
+				</template>
+			</paper-material>
+		</template>
+	</template>
+	<script type="text/javascript">
+	Polymer({
+		is:"album-list"
+	});	
+	</script>
+</dom-module>
