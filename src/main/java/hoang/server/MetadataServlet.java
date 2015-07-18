@@ -29,7 +29,6 @@ public class MetadataServlet
 		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance().getMongoDatabaseConnection("localhost", 27017, "music");
 		
 		String json = conn.getAllDocumentsInCollection();
-		System.out.println(json);
 		
 		return Response.ok(json).type("application/json").build();
 	}

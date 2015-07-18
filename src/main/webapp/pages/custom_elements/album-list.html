@@ -1,9 +1,9 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
-<link rel="import" href="/bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="/bower_components/paper-button/paper-button.html">
-<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="/bower_components/paper-material/paper-material.html">
-<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/pages/bower_components/polymer/polymer.html">
+<link rel="import" href="/pages/bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="/pages/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/pages/bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="/pages/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/pages/bower_components/paper-item/paper-item.html">
 <iron-ajax id="ajax" auto url="metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
 <dom-module id="album-list">
 	<style type="text/css">
@@ -48,7 +48,7 @@
 		}
 	</style>
 	<template>
-		<iron-ajax id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax id="ajax" auto url="/api/metadata/getDocument" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}">
 			<paper-material class="album-card" elevation="1">
 				<div class="album-header">
@@ -59,10 +59,10 @@
 					</div>
 				</div>
 				<template is="dom-repeat" items="{{item.tracks}}">
-					<paper-item class="album-row">
+					<paper-item class="album-row" on-click="itemClicked" data-track="{{item.file}}">
 						<div class="album-column" style="width:30px">{{item.track}}</div>
 						<div class="album-column" style="flex:1">{{item.name}}</div>
-						<div class="album-column" style="width:60px;">{{item.length}}</div>
+						<div class="album-column" style="width:50px;">{{item.length}}</div>
 					</paper-item>
 				</template>
 			</paper-material>
@@ -70,7 +70,20 @@
 	</template>
 	<script type="text/javascript">
 	Polymer({
-		is:"album-list"
+		is:"album-list",
+		properties:{
+			file:{
+				type:String,
+				notify:true,
+			}
+		},
+		itemClicked: function(e)
+		{
+			if(!(typeof e.model.item.file === 'undefined'))
+			{
+				this.file = e.model.item.file;	
+			}
+		},
 	});	
 	</script>
 </dom-module>

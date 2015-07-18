@@ -1,5 +1,5 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
-<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/pages/bower_components/polymer/polymer.html">
+<link rel="import" href="/pages/bower_components/paper-button/paper-button.html">
 <dom-module id="music-player">
 	<template>
 		<paper-button on-click="clickToPlayHandler">
@@ -9,24 +9,43 @@
 		play next!
 		</paper-button>
 		<audio id="player" controls>
-			<source id="source" src="/api/stream/5580899e8c95fd101838af9d" type="audio/mpeg" codecs="mp3"/>
+			<source id="source" src="" type="audio/mpeg" codecs="mp3"/>
 		</audio>
+		<div>
+			<span>{{objectid}}</span>	
+		</div>
 	</template>
 	<script type="text/javascript">
 	"use strict";
-		var player = document.querySelector('#player');
+		var player;
+		var source;
 
 		Polymer({
 			is:"music-player",
-			clickToPlayHandler : function()
+			properties:
 			{
-				player.play();
+				objectid:
+				{
+					type:String,
+					value:"5594ed7e8c95fd1a94ea4241",
+					observer: '_objectidChanged'
+				}
 			},
-			clickToPlayNextHandler : function()
+						ready:function()
 			{
-				document.querySelector('#source').setAttribute("src","api/stream/5594ed7e8c95fd1a94ea4241");
+				player = this.querySelector('#player');
+				source = this.querySelector("#player > source");
 				player.load();
-				player.play();
+			},
+			_objectidChanged: function(newValue, oldValue)
+			{
+				if(oldValue != null)
+				{
+					var url = "api/stream/" + this.objectid;
+					source.src = url;
+					player.load();
+
+				}
 			}
 		});
 	</script>

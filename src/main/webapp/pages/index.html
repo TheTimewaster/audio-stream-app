@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-		<link rel="import" href="/custom_elements/album-list.html">
-		<link rel="import" href="/custom_elements/music-player.html">
-		<link rel="import" href="/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+		<script src="/pages/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+		<link rel="import" href="/pages/custom_elements/album-list.html">
+		<link rel="import" href="/pages/custom_elements/music-player.html">
+		<link rel="import" href="/pages/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
+
 		<style type="text/css">
 		body,html
 		{
@@ -24,7 +25,23 @@
 		<paper-scroll-header-panel classs="flex">
 				Header
 		</paper-scroll-header-panel>
-		<album-list></album-list>
-		<music-player></music-player>
+		<template is="dom-bind">
+			
+		</template>
+		<dom-module id="the-app">
+			<template>
+				<album-list file="{{val}}"></album-list>
+				<music-player objectid="{{val}}"></music-player>
+			</template>
+			<script type="text/javascript">
+			Polymer({
+				is:"the-app",
+			});
+			</script>
+		</dom-module>
+
+		<the-app></the-app>
 	</body>
+	<script type="text/javascript">
+	</script>
 </html>

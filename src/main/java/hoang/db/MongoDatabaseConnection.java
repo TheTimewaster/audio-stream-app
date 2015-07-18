@@ -4,13 +4,22 @@ package hoang.db;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import org.bson.BSONObject;
+import org.bson.BsonArray;
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBRef;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -26,6 +35,8 @@ public class MongoDatabaseConnection
 	public static final String	DEFAULT_MONGO_HOST	= "localhost";
 	public static final int	   DEFAULT_MONGO_PORT	= 27017;
 	public static final String	DEFAULT_DATABASE	= "music";
+	
+	public static final SimpleDateFormat SDF = new SimpleDateFormat("mm:ss");
 
 	private MongoDatabase	   mongoDB;
 
@@ -57,7 +68,6 @@ public class MongoDatabaseConnection
 			while(cursor.hasNext())
 			{				
 				Document doc = cursor.next();
-//				System.out.println(doc.toJson(new DocumentCodec()));
 				
 				Document document = new Document();
 				for(String s : doc.keySet())
@@ -68,7 +78,48 @@ public class MongoDatabaseConnection
 					}
 					else
 					{
-						document.put(s, doc.get(s));
+						if("tracks".equals(s))
+						{
+							JSONArray tracks = new JSONArray();
+							List<Document> list = (ArrayList<Document>) doc.get(s);
+							for(Document innerDoc : list)
+							{	
+								Document track = new Document();
+								for(String innerKey : innerDoc.keySet())
+								{
+									if("file".equals(innerKey))
+									{
+										DBRef pointer = (DBRef) innerDoc.get(innerKey);
+										track.put(innerKey, pointer.getId().toString());
+										System.out.println(pointer.getId().toString());
+									}
+									else if("length".equals(innerKey))
+									{
+										
+										track.put(innerKey, SDF.format(
+												new Date(
+														Long.parseLong(
+																innerDoc.get(innerKey).toString()
+																)
+																)
+												)
+												);
+										
+									}
+									else
+									{
+										track.put(innerKey, innerDoc.get(innerKey));
+									}
+								}
+								tracks.put(track);
+							}
+							
+							document.put(s, tracks);
+						}
+						else
+						{
+							document.put(s, doc.get(s));
+						}
 					}
 				}
 				
@@ -85,6 +136,8 @@ public class MongoDatabaseConnection
 			client.close();
 		}
 
+		System.out.println(array.toString());
+		
 		return array.toString();
 	}
 	
