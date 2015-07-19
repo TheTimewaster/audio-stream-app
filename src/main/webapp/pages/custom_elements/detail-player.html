@@ -1,0 +1,258 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-down-animation.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<dom-module id="detail-player">
+	<style type="text/css">
+		:host
+		{
+			position: absolute;
+			display: none;
+			bottom: 80px;
+			right: 0px;
+		}
+		#detailPlayer
+		{
+			width: 400px;
+			height: 600px;
+			background-color: #FAFAFA;
+			display: block;
+			border-radius: 2px;
+		}
+		.playerCoverContainer
+		{
+
+		}
+		.playerCoverOverlay
+		{
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			background: linear-gradient(to top, rgba(255,255,255,0) 0%, rgba(246,246,246,0.47) 47%, rgba(148,148,148,1) 100%);
+			width: 400px;
+			height: 400px;
+			border-radius: 2px 2px 0 0;
+		}
+		.playerCover
+		{
+			width: 400px;
+			height: 400px;
+			background-color: var(--paper-deep-purple-500);
+			border-radius: 2px 2px 0 0;
+		}
+		.playerCoverHeader
+		{
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			z-index: 3;
+			color:white;
+		}
+		.playerTrackContainer
+		{
+			display: block;
+			text-align: center;
+			margin-top: 8px;
+			margin-bottom: 8px;
+			height: 70px;
+		}
+		.playerControlContainer paper-slider
+		{
+			width: 400px;
+		}
+		.playerControl
+		{
+			width: 400px;
+			display: flex;
+			justify-content:center;
+			align-items:center;
+			margin-top: 0px;
+			margin-bottom: 8px;
+		}
+		.playerControlContainer
+		{
+			width: 100%;
+		}
+		paper-toolbar.playerHeader
+		{
+			--paper-toolbar-background: var(--paper-green-500);
+		}
+		paper-icon-button.larger::shadow #icon
+		{
+			width: 48px;
+			height: 48px;
+		}
+	</style>
+	<template>
+		<paper-material elevation="4" id="detailPlayer">
+			<div class="playerCoverContainer">
+				<div class="playerCoverHeader">
+					<paper-icon-button icon="close"></paper-icon-button>
+				</div>
+				<div class="playerCoverOverlay">
+					
+				</div>
+				<div class="playerCover">
+					
+				</div>
+			</div>
+			<div class="playerTrackContainer">
+				<h2>{{track.name}}</h2>
+				<p>{{track.artist}}</p>
+				<p>{{track.album}}</p>
+			</div>
+			<div class="playerControlContainer">
+				
+				<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="sliderSeek">
+				</paper-slider>
+				
+				<div class="playerControl">
+					<paper-icon-button class="larger" icon="av:skip-previous"></paper-icon-button>
+					<paper-icon-button class="larger" icon="av:play-arrow" on-click="playClicked" id="playButton"></paper-icon-button>
+					<paper-icon-button class="larger" icon="av:skip-next"></paper-icon-button>
+				</div>
+			</div>
+		</paper-material>
+
+		<audio id="audioElement">
+			<source id="sourceElement" src="" type="audio/mpeg" codecs="mp3"/>
+		</audio>
+	</template>
+	<script type="text/javascript">
+		var audioElement;
+		var sourceElement;
+		var playBackProgress = 0;
+
+		Polymer({
+			is:"detail-player",
+			behaviors: [
+		      Polymer.NeonAnimationRunnerBehavior
+		    ],
+			properties:
+			{
+				track:
+				{
+					type:Object,
+					notify:true,
+					observer:"_trackObjectChanged"
+				},
+				animationConfig: {
+			        type: Object,
+			        value: function() {
+			          	return {
+				            'entry': [{
+					            name: 'scale-up-animation',
+					            node: this,
+					            transformOrigin: '90% 110%'
+				            }],
+				            'exit': [{
+					            name: 'scale-down-animation',
+					            node: this,
+					            transformOrigin: '90% 110%'
+				            }]
+			          	}
+			        }
+			    },
+			   _showing: {
+			        type: Boolean,
+			        value: false
+		      	},
+		      	playing:
+		      	{
+		      		type:Boolean,
+		      		value:false
+		      	}
+			},
+			listeners: 
+			{
+				'neon-animation-finish': '_onAnimationFinish',
+				'audioElement.ontimeupdate':'timeUpdated'
+		   },
+		   _onAnimationFinish: function() {
+		      if (this._showing) {
+		      } else {
+		        this.style.display = '';
+		      }
+		   },
+			ready:function()
+			{
+				audioElement = this.$$('#audioElement');
+				sourceElement = this.$$("#audioElement > #sourceElement");
+				progressElement = this.$$('#playerProgress');
+
+				audioElement.ontimeupdate = function ()
+				{
+					if(Math.round(300 * audioElement.currentTime/audioElement.duration) > playBackProgress)
+					{
+						playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
+						progressElement.value = playBackProgress;
+					}
+				}
+
+				audioElement.onpause = function ()
+				{
+					if(audioElement.currentTime == audioElement.duration)
+			   		{
+			   			progressElement.value = 0;
+			   		}
+				}
+
+				this.track = {
+					"name":"Nothing to see here",
+					"artist":"foo",
+					"album":"bar"
+				};
+			},
+			_trackObjectChanged: function(newValue, oldValue)
+			{
+				if(newValue.file != null)
+				{
+					playBackProgress = 0;
+					progressElement.value = playerProgress;
+					var url = "/api/stream/" + newValue.file;
+					sourceElement.src = url;
+					audioElement.load();
+					audioElement.play();
+					playing = true;
+					this.$$("#playButton").icon = "av:pause";
+				}
+			},
+			show: function() 
+			{
+		      this.style.display = 'block';
+		      this._showing = true;
+		      this.playAnimation('entry');
+		   	},
+		   	hide: function() 
+		   	{
+		      this._showing = false;
+		      this.playAnimation('exit');
+		   	},
+		   	playClicked:function()
+		   	{
+		   		if(!this.playing)
+		   		{
+		   			this.$$("#playButton").icon = "av:pause";
+		   			this.playing = true;
+		   			audioElement.play();
+		   		}
+		   		else
+		   		{
+		   			this.$$("#playButton").icon = "av:play-arrow";
+		   			this.playing = false;
+		   			audioElement.pause();
+		   		}
+		   	},
+		   	sliderSeek:function(e)
+		   	{
+		   		audioElement.currentTime = progressElement.value / 300*audioElement.duration;
+		   	}
+		});
+	</script>
+</dom-module>

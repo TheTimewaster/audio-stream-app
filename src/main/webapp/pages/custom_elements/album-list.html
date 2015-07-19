@@ -1,10 +1,10 @@
-<link rel="import" href="/pages/bower_components/polymer/polymer.html">
-<link rel="import" href="/pages/bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="/pages/bower_components/paper-button/paper-button.html">
-<link rel="import" href="/pages/bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="/pages/bower_components/paper-material/paper-material.html">
-<link rel="import" href="/pages/bower_components/paper-item/paper-item.html">
-<iron-ajax id="ajax" auto url="metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
 <dom-module id="album-list">
 	<style type="text/css">
 		:host
@@ -13,7 +13,7 @@
 			display: block;
 			padding-bottom: 40px;
 		}
-		.album-card
+		.albumCard
 		{
 			margin: 16px;
 			border-radius: 2px;
@@ -21,67 +21,95 @@
 			width: auto;
 			padding-bottom: 16px;
 		}
-		.album-row
+		.albumRow
 		{
 			display: flex;
 			width: auto;
+			position:relative;
 		}
-		.album-row:hover
+		.albumRow:hover
 		{
-			background-color: #E0E0E0;
-
+			background-color: var(--paper-blue-50);
 		}
-		.album-header
+		.albumRow:hover .playIcon
 		{
-			
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.albumRow:hover span
+		{
+			display: none;
+		}
+		.playIcon
+		{
+			display: none;
+			width: 24px;
+			height: 24px;
+			top: 2px;
+			left: 8px;
+			position: absolute;
+			z-index: 3;
+		}
+		.albumHeader
+		{
 			display: inline-flex;
 		}
-		.album-cover
+		.albumCover
 		{
 			background-color: gray;
 			width: 200px;
 			height: 200px;
 		}
-		.album-title
+		.albumTitle
 		{
 			margin: 16px;
 		}
 	</style>
 	<template>
 		<iron-ajax id="ajax" auto url="/api/metadata/getDocument" handle-as="json" last-response="{{data}}"></iron-ajax>
-		<template is="dom-repeat" items="{{data}}">
-			<paper-material class="album-card" elevation="1">
-				<div class="album-header">
-					<div class="album-cover"></div>
-					<div class="album-title">
-						<h1>{{item.album}}</h1>
-						<h3>{{item.artist}}</h3>
+		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
+			<paper-material class="albumCard" elevation="1">
+				<div class="albumHeader">
+					<div class="albumCover"></div>
+					<div class="albumTitle">
+						<h1>{{album.album}}</h1>
+						<h3>{{album.artist}}</h3>
 					</div>
 				</div>
-				<template is="dom-repeat" items="{{item.tracks}}">
-					<paper-item class="album-row" on-click="itemClicked" data-track="{{item.file}}">
-						<div class="album-column" style="width:30px">{{item.track}}</div>
-						<div class="album-column" style="flex:1">{{item.name}}</div>
-						<div class="album-column" style="width:50px;">{{item.length}}</div>
+				<template is="dom-repeat" items="{{album.tracks}}" as="track">
+					<paper-item class="albumRow">
+						<div class="album-column" style="width:40px;text-align:right">
+						<span style="margin-right:25px">{{track.track}}</span>
+						<paper-icon-button class="playIcon" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
+						</div>
+						<div class="album-column" style="flex:1">{{track.name}}</div>
+						<div class="album-column" style="width:50px;">{{track.length}}</div>
 					</paper-item>
 				</template>
 			</paper-material>
 		</template>
 	</template>
 	<script type="text/javascript">
+
 	Polymer({
 		is:"album-list",
 		properties:{
-			file:{
+			selectedtrack:{
 				type:String,
-				notify:true,
+				notify:true
 			}
 		},
-		itemClicked: function(e)
+		playClicked: function(e)
 		{
-			if(!(typeof e.model.item.file === 'undefined'))
+			if(!(typeof e.model.track.file === 'undefined'))
 			{
-				this.file = e.model.item.file;	
+				var albumList = this.$$("#albumList");
+				var albumModel = albumList.modelForElement(e.target).album;
+				var newTrackObject = e.model.track;
+				newTrackObject.album = albumModel.album;
+				newTrackObject.artist = albumModel.artist;
+				this.selectedtrack = newTrackObject;
 			}
 		},
 	});	

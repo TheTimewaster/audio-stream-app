@@ -1,52 +1,48 @@
-<link rel="import" href="/pages/bower_components/polymer/polymer.html">
-<link rel="import" href="/pages/bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="detail-player.html">
 <dom-module id="music-player">
+	<style type="text/css">
+	:host
+	{
+		position: absolute;
+		bottom: 24px;
+		right: 48px;
+	}
+	#fabIcon
+	{
+		background-color: var(--paper-green-500);
+	}
+	</style>
 	<template>
-		<paper-button on-click="clickToPlayHandler">
-		play now!
-		</paper-button>
-		<paper-button on-click="clickToPlayNextHandler">
-		play next!
-		</paper-button>
-		<audio id="player" controls>
-			<source id="source" src="" type="audio/mpeg" codecs="mp3"/>
-		</audio>
-		<div>
-			<span>{{objectid}}</span>	
-		</div>
+		<paper-fab id="fabIcon" on-click="openPlayer" icon="av:queue-music"></paper-fab>
+		<detail-player id="player" track="{{trackobject}}"></detail-player>
 	</template>
 	<script type="text/javascript">
-	"use strict";
-		var player;
-		var source;
-
 		Polymer({
 			is:"music-player",
 			properties:
 			{
-				objectid:
+				trackobject:
 				{
-					type:String,
-					value:"5594ed7e8c95fd1a94ea4241",
-					observer: '_objectidChanged'
+					type:Object,
+					notify:true
 				}
 			},
-						ready:function()
+			openPlayer:function(event)
 			{
-				player = this.querySelector('#player');
-				source = this.querySelector("#player > source");
-				player.load();
-			},
-			_objectidChanged: function(newValue, oldValue)
-			{
-				if(oldValue != null)
+				var player = this.$$("#player");
+				if(!player._showing)
 				{
-					var url = "api/stream/" + this.objectid;
-					source.src = url;
-					player.load();
-
+					player.show();
 				}
-			}
+				else
+				{
+					player.hide();	
+				}
+			},
 		});
 	</script>
 </dom-module>
