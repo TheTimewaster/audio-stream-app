@@ -18,17 +18,16 @@
 	</style>
 	<template>
 		<paper-fab id="fabIcon" on-click="openPlayer" icon="av:queue-music"></paper-fab>
-		<detail-player id="player" track="{{trackobject}}"></detail-player>
+		<detail-player id="player" tracks="{{tracksArray}}"></detail-player>
 	</template>
 	<script type="text/javascript">
 		Polymer({
 			is:"music-player",
 			properties:
 			{
-				trackobject:
+				tracksArray:
 				{
-					type:Object,
-					notify:true
+					type:Array,
 				}
 			},
 			openPlayer:function(event)
@@ -42,7 +41,7 @@
 				{
 					player.hide();	
 				}
-			},
+			}
 		});
 	</script>
 </dom-module>

@@ -1,0 +1,85 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<dom-module id="play-list">
+	<style>
+		:host {
+			z-index:5;
+			display:none;
+			width:100%;
+			position:absolute;
+			top:64px;
+		}
+		#listContainer
+		{
+			height:400px;
+			background-color:var(--paper-grey-50);
+		}
+		.playListRow
+		{
+
+		}
+		.playListRow
+		{
+
+		}
+	</style>
+	<template>
+		<div id="listContainer">
+			<template is="dom-repeat" items="{{playList}}" as="track">
+				<paper-item class="playListRow">
+					<paper-item-body two-line>
+						<span>{{track.name}}</span>
+						<span secondary>{{track.artist}} + {{track.album}}</span>
+					</paper-item-body>
+					<paper-item-body>
+						<span>{{track.length}}</span>
+					</paper-item-body>
+				</paper-item>
+			</template>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'play-list',
+			properties:
+			{
+				currentPlayingTrackIndex:
+				{
+					type:Number,
+					value:0
+				},
+				playList:
+				{
+					type:Array,
+					observer:"playListChanged"
+				},
+				visible:
+				{
+					type:Boolean
+				}
+			},
+			ready:function()
+			{
+				this.visible = true;
+			},
+			playListChanged:function(newValue, oldValue)
+			{
+				console.log(newValue);
+			},
+			changeVisible:function()
+			{
+				if(this.visible)
+				{
+					this.style.display = "block";
+				}
+				else
+				{
+					this.style.display = "none";
+				}
+
+				this.visible = !this.visible;
+			}
+		});
+	</script>
+</dom-module>

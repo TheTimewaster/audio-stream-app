@@ -20,6 +20,7 @@
 			display: block;
 			width: auto;
 			padding-bottom: 16px;
+			background-color:var(--paper-grey-50);
 		}
 		.albumRow
 		{
@@ -29,7 +30,7 @@
 		}
 		.albumRow:hover
 		{
-			background-color: var(--paper-blue-50);
+			background-color: var(--paper-grey-100);
 		}
 		.albumRow:hover .playIcon
 		{
@@ -54,6 +55,7 @@
 		.albumHeader
 		{
 			display: inline-flex;
+			display: -webkit-inline-flex;
 		}
 		.albumCover
 		{
@@ -67,7 +69,7 @@
 		}
 	</style>
 	<template>
-		<iron-ajax id="ajax" auto url="/api/metadata/getDocument" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
 			<paper-material class="albumCard" elevation="1">
 				<div class="albumHeader">
@@ -83,7 +85,7 @@
 						<span style="margin-right:25px">{{track.track}}</span>
 						<paper-icon-button class="playIcon" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
 						</div>
-						<div class="album-column" style="flex:1">{{track.name}}</div>
+						<div class="album-column" style="flex:1;-webkit-flex:1;">{{track.name}}</div>
 						<div class="album-column" style="width:50px;">{{track.length}}</div>
 					</paper-item>
 				</template>
@@ -95,8 +97,8 @@
 	Polymer({
 		is:"album-list",
 		properties:{
-			selectedtrack:{
-				type:String,
+			toPlayTracks:{
+				type:Array,
 				notify:true
 			}
 		},
@@ -109,7 +111,11 @@
 				var newTrackObject = e.model.track;
 				newTrackObject.album = albumModel.album;
 				newTrackObject.artist = albumModel.artist;
-				this.selectedtrack = newTrackObject;
+
+				var newArray = [];
+				newArray.push(newTrackObject);
+
+				this.toPlayTracks = newArray;
 			}
 		},
 	});	
