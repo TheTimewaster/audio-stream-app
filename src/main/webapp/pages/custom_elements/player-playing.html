@@ -1,0 +1,106 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/animations/slide-down-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-down-animation.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../bower_components/neon-animation/animations/transform-animation.html">
+<link rel="import" href="player-controller.html">
+<dom-module id="player-playing">
+	<style>
+		:host {
+			display: block;
+			position: absolute;
+		}
+		#playingAlbumCover
+		{
+			background-color: var(--paper-grey-500);
+			width:400px;
+			height:400px;
+		}
+		#playerTrackContainer
+		{
+			display: block;
+			text-align: center;
+			margin-top: 8px;
+			margin-bottom: 8px;
+			height: 70px;
+			position:relative;
+			width:100%;
+		}
+	</style>
+	<template>
+		<div id="playingAlbumCover">
+				
+		</div>
+		
+		<div id="playerTrackContainer">
+			<h2>{{currentlyPlaying.name}}</h2>
+			<p>{{currentlyPlaying.artist}}</p>
+			<p>{{currentlyPlaying.album}}</p>
+		</div>
+		<player-controller url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller>
+	</template>
+	<script>
+		Polymer({
+			is: 'player-playing',
+			behaviors:
+			[
+				Polymer.NeonAnimationRunnerBehavior
+			],
+			properties:
+			{
+				currentlyPlaying:
+				{
+					type:Object
+				},
+				animationConfig: {
+			        type: Object,
+			        value: function() {
+			          return {
+			            'entry': [{
+			              	name: 'transform-animation',
+							node: this,
+							transformTo:"translateY(265px)"
+			            },
+			            {
+			              	name: 'transform-animation',
+							node: this.$.playingAlbumCover,
+							transformTo:"scale(0.5) translate(-50%, 50%)"
+							
+			            },
+			            ],
+			            'exit': [{
+			              name: 'fade-out-animation',
+			              node: this
+			            }]
+			          }
+			        }
+		      	}
+			},
+			listeners: {
+		    	'neon-animation-finish': '_onAnimationFinish'
+		    },
+			concatStreamingURL:function(objectID)
+			{
+				if (objectID != null) {
+					return "/api/stream/" + objectID;
+				};
+			},
+			_onAnimationFinish:function()
+			{
+				this.style.bottom = 0;
+				this.$$("#playingAlbumCover").style.width = "200px";
+				this.$$("#playingAlbumCover").style.height ="200px";
+				this.$$("#playingAlbumCover").style.height ="200px";
+			},
+			show: function() 
+			{
+		      	this.playAnimation('entry');
+		    },
+		    hide: function() 
+		    {
+		      	this.playAnimation('exit');
+		    }
+		});
+	</script>
+</dom-module>

@@ -1,1 +1,95 @@
-[{"artist":"Muse","year":2015,"album":"Drones","_id":"557d899896055be8584edebe","tracks":[{"name":"Psycho","length":"05:17","track":3},{"name":"Mercy","length":"03:51","track":4},{"name":"Reapers","length":"05:59","track":5}]},{"artist":"The Black Keys","year":2010,"album":"Brothers","_id":"558028bb65eb66a41503bdc0","tracks":[{"file":"5594ed658c95fd196cd14de3","name":"Everlasting Light","length":"03:23","track":1},{"file":"5594ed7e8c95fd1a94ea4241","name":"Next Girl","length":"03:06","track":2}]},{"artist":"Muse","year":2006,"album":"Blackholes and Revelations","_id":"5594e66f2a9af9c0819c8b5a","tracks":[{"file":"5580899e8c95fd101838af9d","name":"Supermassive Black Hole","length":"03:29","track":3}]}]
+[
+   {
+      "artist":"Muse",
+      "year":2015,
+      "album":"Drones",
+      "_id":"557d899896055be8584edebe",
+      "tracks":[
+         {
+            "name":"Psycho",
+            "length":"05:17",
+            "track":3
+         },
+         {
+            "name":"Mercy",
+            "length":"03:51",
+            "track":4
+         },
+         {
+            "name":"Reapers",
+            "length":"05:59",
+            "track":5
+         }
+      ]
+   },
+   {
+      "artist":"The Black Keys",
+      "year":2010,
+      "album":"Brothers",
+      "_id":"558028bb65eb66a41503bdc0",
+      "tracks":[
+         {
+            "file":"5594ed658c95fd196cd14de3",
+            "name":"Everlasting Light",
+            "length":"03:23",
+            "track":1
+         },
+         {
+            "file":"5594ed7e8c95fd1a94ea4241",
+            "name":"Next Girl",
+            "length":"03:06",
+            "track":2
+         },
+          {
+            "file":"5594ed658c95fd196cd14de3",
+            "name":"Everlasting Light",
+            "length":"03:23",
+            "track":3
+         },
+         {
+            "file":"5594ed7e8c95fd1a94ea4241",
+            "name":"Next Girl",
+            "length":"03:06",
+            "track":4
+         },
+          {
+            "file":"5594ed658c95fd196cd14de3",
+            "name":"Everlasting Light",
+            "length":"03:23",
+            "track":5
+         },
+         {
+            "file":"5594ed7e8c95fd1a94ea4241",
+            "name":"Next Girl",
+            "length":"03:06",
+            "track":6
+         },
+         {
+            "file":"5594ed658c95fd196cd14de3",
+            "name":"Everlasting Light",
+            "length":"03:23",
+            "track":7
+         },
+         {
+            "file":"5594ed7e8c95fd1a94ea4241",
+            "name":"Next Girl",
+            "length":"03:06",
+            "track":8
+         }
+      ]
+   },
+   {
+      "artist":"Muse",
+      "year":2006,
+      "album":"Blackholes and Revelations",
+      "_id":"5594e66f2a9af9c0819c8b5a",
+      "tracks":[
+         {
+            "file":"5580899e8c95fd101838af9d",
+            "name":"Supermassive Black Hole",
+            "length":"03:29",
+            "track":3
+         }
+      ]
+   }
+]

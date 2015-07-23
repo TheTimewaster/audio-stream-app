@@ -1,7 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
-<dom-module id="play-list">
+<dom-module id="player-list">
 	<style>
 		:host {
 			z-index:5;
@@ -14,44 +14,53 @@
 		{
 			height:400px;
 			background-color:var(--paper-grey-50);
+			overflow: auto;
 		}
-		.playListRow
+		.playListRow:hover
 		{
-
+			background-color: var(--paper-grey-300)
 		}
-		.playListRow
+		.playListRow .cover
 		{
-
+			width: 48px;
+			height: 48px;
+			background-color: var(--paper-red-50);
+			margin-right: 16px;
 		}
 	</style>
 	<template>
 		<div id="listContainer">
-			<template is="dom-repeat" items="{{playList}}" as="track">
+			<template is="dom-repeat" items="{{playList.tracks}}" as="track">
 				<paper-item class="playListRow">
+					<template is="dom-if" if="{{track.start}}">
+						<div class="cover" style="background-color:black"></div>
+					</template>
+					<template is="dom-if" if="{{!track.start}}">
+						<div class="cover"></div>
+					</template>
 					<paper-item-body two-line>
 						<span>{{track.name}}</span>
-						<span secondary>{{track.artist}} + {{track.album}}</span>
+						<span secondary>{{concatAlbumAndArtistString(track.artist,track.album)}}</span>
 					</paper-item-body>
-					<paper-item-body>
-						<span>{{track.length}}</span>
-					</paper-item-body>
+					
+					<span>{{track.length}}</span>
 				</paper-item>
 			</template>
 		</div>
 	</template>
 	<script>
 		Polymer({
-			is: 'play-list',
+			is: 'player-list',
 			properties:
 			{
-				currentPlayingTrackIndex:
+				playingTrack:
 				{
-					type:Number,
-					value:0
+					type:Object,
+					notify:true
 				},
 				playList:
 				{
-					type:Array,
+					type:Object,
 					observer:"playListChanged"
 				},
 				visible:
@@ -65,7 +74,11 @@
 			},
 			playListChanged:function(newValue, oldValue)
 			{
-				console.log(newValue);
+				if(newValue != undefined)
+				{
+					this.playingTrack = newValue.tracks[newValue.startIndex]
+					console.log(this.playingTrack);
+				}
 			},
 			changeVisible:function()
 			{
@@ -79,6 +92,11 @@
 				}
 
 				this.visible = !this.visible;
+				return this.visible;
+			},
+			concatAlbumAndArtistString:function(artist, album)
+			{
+				return artist + " - " + album;
 			}
 		});
 	</script>

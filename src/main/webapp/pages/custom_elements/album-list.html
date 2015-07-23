@@ -83,7 +83,7 @@
 					<paper-item class="albumRow">
 						<div class="album-column" style="width:40px;text-align:right">
 						<span style="margin-right:25px">{{track.track}}</span>
-						<paper-icon-button class="playIcon" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
+						<paper-icon-button class="playIcon" on-click="trackFromAlbumPlayClicked" icon="av:play-arrow"></paper-icon-button>
 						</div>
 						<div class="album-column" style="flex:1;-webkit-flex:1;">{{track.name}}</div>
 						<div class="album-column" style="width:50px;">{{track.length}}</div>
@@ -98,24 +98,40 @@
 		is:"album-list",
 		properties:{
 			toPlayTracks:{
-				type:Array,
+				type:Object,
 				notify:true
 			}
 		},
-		playClicked: function(e)
+		trackFromAlbumPlayClicked: function(e)
 		{
 			if(!(typeof e.model.track.file === 'undefined'))
 			{
+				
 				var albumList = this.$$("#albumList");
-				var albumModel = albumList.modelForElement(e.target).album;
-				var newTrackObject = e.model.track;
-				newTrackObject.album = albumModel.album;
-				newTrackObject.artist = albumModel.artist;
-
+				var toPlayTracksObject = {
+					tracks:null,
+					startIndex:0
+				};
 				var newArray = [];
-				newArray.push(newTrackObject);
+				var albumModel = albumList.modelForElement(e.target).album;
 
-				this.toPlayTracks = newArray;
+				for (var i = 0; i < albumList.modelForElement(e.target).album.tracks.length; i++) 
+				{
+					var newTrackObject = albumList.modelForElement(e.target).album.tracks[i];
+					if(newTrackObject == e.model.track)
+					{
+						toPlayTracksObject.startIndex = i
+					}
+
+					newTrackObject.album = albumModel.album;
+					newTrackObject.artist = albumModel.artist;
+
+					newArray.push(newTrackObject);
+				};
+
+				toPlayTracksObject.tracks = newArray;
+
+				this.toPlayTracks = toPlayTracksObject;
 			}
 		},
 	});	

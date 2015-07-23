@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-down-animation.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="player-list.html">
+<link rel="import" href="player-playing.html">
+<dom-module id="player-main">
+	<style type="text/css">
+		:host
+		{
+			height: 100%;	
+		}
+		#detailPlayer
+		{
+			width: 400px;
+			display: block;
+			border-radius: 2px;
+			position:relative;
+		}
+		paper-toolbar.playerHeader
+		{
+			z-index:10;
+			--paper-toolbar:
+			{
+				background: none;
+			};
+		}
+		paper-toolbar.medium-tall
+	    {
+	    	background-color:var(--paper-blue-700);
+	    }
+	</style>
+	<template>
+		<paper-toolbar class="medium-tall">
+			<paper-icon-button style="width:27px" icon="list" on-click="showPlayList"></paper-icon-button>
+			<div class="title">Playing</div>
+			<paper-icon-button style="width:27px" icon="close"></paper-icon-button>
+		</paper-toolbar>
+		
+		<player-list id="playListContainer" playing-track="{{currentTrack}}" play-list="[[toPlayTracks]]"></player-list>
+		<player-playing id="playingContainer" currently-playing="{{currentTrack}}"></player-playing>
+	</template>
+	<script type="text/javascript">
+		var playing = false;
+
+		Polymer({
+			is:"player-main",
+			properties:
+			{
+				toPlayTracks:
+				{
+					type:Object
+				},
+			   _showing: {
+			        type: Boolean,
+			        value: false
+		      	}
+			},
+			ready:function()
+			{
+				this.toPlayTracks = 
+					{
+						"tracks":[
+							{
+								"name":"Nothing to see here",
+								"artist":"foo",
+								"album":"bar"
+							}
+						],
+						"startIndex":0
+					}
+				;
+				
+			},
+		   	showPlayList:function()
+		   	{
+		   		this.$$("#playingContainer").show();
+		   	},
+		});
+	</script>
+</dom-module>

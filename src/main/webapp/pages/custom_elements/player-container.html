@@ -2,14 +2,12 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
-<link rel="import" href="detail-player.html">
-<dom-module id="music-player">
+<link rel="import" href="player-main.html">
+<dom-module id="player-container">
 	<style type="text/css">
 	:host
 	{
-		position: absolute;
-		bottom: 24px;
-		right: 48px;
+
 	}
 	#fabIcon
 	{
@@ -17,29 +15,16 @@
 	}
 	</style>
 	<template>
-		<paper-fab id="fabIcon" on-click="openPlayer" icon="av:queue-music"></paper-fab>
-		<detail-player id="player" tracks="{{tracksArray}}"></detail-player>
+		<player-main id="player" to-play-tracks="[[tracksArray]]"></player-main>
 	</template>
 	<script type="text/javascript">
 		Polymer({
-			is:"music-player",
+			is:"player-container",
 			properties:
 			{
 				tracksArray:
 				{
-					type:Array,
-				}
-			},
-			openPlayer:function(event)
-			{
-				var player = this.$$("#player");
-				if(!player._showing)
-				{
-					player.show();
-				}
-				else
-				{
-					player.hide();	
+					type:Object
 				}
 			}
 		});

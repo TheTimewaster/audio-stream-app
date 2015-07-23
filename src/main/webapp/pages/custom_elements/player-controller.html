@@ -1,0 +1,138 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<dom-module id="player-controller">
+	<style>
+		:host {
+			display: block;
+		}
+		.playerControlContainer paper-slider
+		{
+			width: 400px;
+		}
+		.playerControl
+		{
+			width: 400px;
+			display: flex;
+			display: -webkit-flex;
+			justify-content:center;
+			align-items:center;
+			-webkit-justify-content:center;
+			-webkit-align-items:center;
+			padding-bottom: 8px;
+		}
+		.playerControlContainer
+		{
+			width: 100%;
+		}
+		paper-icon-button.larger::shadow #icon
+		{
+			width: 48px;
+			height: 48px;
+		}
+	</style>
+	<template>
+		<div class="playerControlContainer">
+			<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="sliderSeek">
+			</paper-slider>
+			
+			<div class="playerControl">
+				<paper-icon-button icon="av:repeat" disabled></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-previous"></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:play-arrow" on-click="playClicked" id="playButton"></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-next"></paper-icon-button>
+				<paper-icon-button icon="av:shuffle" disabled></paper-icon-button>
+			</div>
+		</div>
+		<audio id="audioElement">
+				<source id="sourceElement" src="" type="audio/mpeg" codecs="mp3"/>
+			</audio>
+	</template>
+	<script>
+		var audioElement;
+		var playBackProgress = 0;
+		var isPlaying = false;
+		var playButton;
+
+		Polymer({
+			is: 'player-controller',
+			properties:
+			{
+				url:
+				{
+					type:String,
+					observer:"streamURLChanged"
+				}
+			},
+			ready:function()
+			{
+				audioElement = this.$$('#audioElement');
+				progressElement = this.$$('#playerProgress');
+				playButton = this.$$("#playButton");
+
+				audioElement.ontimeupdate = function ()
+				{
+					if(Math.round(300 * audioElement.currentTime/audioElement.duration) > playBackProgress)
+					{
+						playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
+						progressElement.value = playBackProgress;
+					}
+				}
+
+				audioElement.onpause = function ()
+				{
+
+					if(audioElement.currentTime == audioElement.duration)
+			   		{
+			   			progressElement.value = 0;
+			   			//is the player-controller
+			   			this.parentElement.changeState();
+			   		}
+				}
+			},
+			streamURLChanged:function(newValue, oldValue)
+			{
+				if(newValue != null)
+				{
+					playBackProgress = 0;
+					progressElement.value = playBackProgress;
+					this.$$("#sourceElement").src = this.url;
+					audioElement.load();
+					audioElement.play();
+					this.changeState();
+				}
+			},
+			playClicked:function()
+		   	{
+		   		if(!isPlaying)
+		   		{
+		   			audioElement.play();
+		   		}
+		   		else
+		   		{
+		   			audioElement.pause();
+		   		}
+
+		   		this.changeState();
+		   	},
+		   	sliderSeek:function(e)
+		   	{
+		   		audioElement.currentTime = progressElement.value / 300*audioElement.duration;
+		   	},
+		   	changeState:function()
+		   	{
+		   		if(!isPlaying)
+		   		{
+		   			this.$$("#playButton").icon = "av:pause";
+		   		}
+		   		else
+		   		{
+		   			this.$$("#playButton").icon = "av:play-arrow";	
+		   		}
+
+		   		isPlaying = !isPlaying;
+		   	}
+		});
+	</script>
+</dom-module>
