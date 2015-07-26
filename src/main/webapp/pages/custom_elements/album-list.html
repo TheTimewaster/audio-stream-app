@@ -1,0 +1,76 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<dom-module id="album-list">
+	<style type="text/css">
+		:host
+		{
+			width: 100%;
+			display: flex;
+			padding-bottom: 40px;
+		}
+		paper-material.albumSmall
+		{
+			min-height:200px;
+			width:200px;
+			margin:16px;
+			cursor:pointer;
+		}
+		.albumThumbnail
+		{
+			width:200px;
+			height:200px;
+			background-color:var(--paper-blue-500);
+		}
+		.albumDescrip
+		{
+			padding:8px;
+			overflow:hidden;
+			white-space:nowrap;
+		}
+		.albumDescrip
+		{
+			@apply(--paper-font-body1);
+		}
+		.albumName
+		{
+			@apply(--paper-font-subhead);
+		}
+	</style>
+	<template>
+				<iron-ajax id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
+			<paper-material elevation="1" class="albumSmall" on-click="albumClicked">
+				<div class="albumThumbnail">
+				</div>
+				<div class="albumDescrip">
+					<span class="albumName">{{shortenLongString(album.album)}}</span></br><span>{{shortenLongString(album.artist)}}</span>
+				</div>
+			</paper-material>
+		</template>
+	</template>
+	<script type="text/javascript">
+
+	Polymer({
+		is:"album-list",
+		properties:{
+			toPlayTracks:{
+				type:Object,
+				notify:true
+			}
+		},
+		shortenLongString:function(input)
+		{
+			return (input.length > 22) ? input.substring(0 , 22) + "..." : input;
+		},
+		albumClicked:function(e)
+		{
+			this.fire("album-clicked", {obj:e.model.album});
+		}
+	});	
+	</script>
+</dom-module>
