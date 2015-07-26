@@ -88,6 +88,7 @@
 			   			progressElement.value = 0;
 			   			//is the player-controller
 			   			this.parentElement.changeState();
+			   			this.parentElement.parentElement.fire("playback-end");
 			   		}
 				}
 			},

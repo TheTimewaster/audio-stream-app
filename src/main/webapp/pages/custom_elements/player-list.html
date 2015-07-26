@@ -97,6 +97,18 @@
 			concatAlbumAndArtistString:function(artist, album)
 			{
 				return artist + " - " + album;
+			},
+			playNextTrack:function()
+			{
+				//handling repeat and shuffle
+
+				//avoid out of array
+				var currentList = this.playList.tracks;
+				if(currentList.indexOf(this.playingTrack) != currentList.length)
+				{
+					var nextIndex = currentList.indexOf(this.playingTrack) + 1;
+					this.playingTrack = currentList[nextIndex];
+				}
 			}
 		});
 	</script>

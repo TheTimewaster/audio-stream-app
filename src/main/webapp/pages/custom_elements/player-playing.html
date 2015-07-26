@@ -27,6 +27,15 @@
 			position:relative;
 			width:100%;
 		}
+		p
+		{
+			@apply(--paper-font-subhead);
+			margin:0;
+		}
+		.playerPlayingHeader
+		{
+			@apply(--paper-font-headline);
+		}
 	</style>
 	<template>
 		<div id="playingAlbumCover">
@@ -34,9 +43,8 @@
 		</div>
 		
 		<div id="playerTrackContainer">
-			<h2>{{currentlyPlaying.name}}</h2>
-			<p>{{currentlyPlaying.artist}}</p>
-			<p>{{currentlyPlaying.album}}</p>
+			<span class="playerPlayingHeader">{{currentlyPlaying.name}}</span>
+			<p>{{currentlyPlaying.artist}}</br>{{currentlyPlaying.album}}</p>
 		</div>
 		<player-controller url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller>
 	</template>
@@ -52,7 +60,7 @@
 				currentlyPlaying:
 				{
 					type:Object
-				},
+				}/*,
 				animationConfig: {
 			        type: Object,
 			        value: function() {
@@ -65,7 +73,7 @@
 			            {
 			              	name: 'transform-animation',
 							node: this.$.playingAlbumCover,
-							transformTo:"scale(0.5) translate(-50%, 50%)"
+							transformTo:"scale(0.3) translate(-50%, 50%)"
 							
 			            },
 			            ],
@@ -75,7 +83,7 @@
 			            }]
 			          }
 			        }
-		      	}
+		      	}*/
 			},
 			listeners: {
 		    	'neon-animation-finish': '_onAnimationFinish'
@@ -88,10 +96,7 @@
 			},
 			_onAnimationFinish:function()
 			{
-				this.style.bottom = 0;
-				this.$$("#playingAlbumCover").style.width = "200px";
-				this.$$("#playingAlbumCover").style.height ="200px";
-				this.$$("#playingAlbumCover").style.height ="200px";
+
 			},
 			show: function() 
 			{
@@ -101,6 +106,7 @@
 		    {
 		      	this.playAnimation('exit');
 		    }
+
 		});
 	</script>
 </dom-module>

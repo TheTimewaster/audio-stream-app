@@ -1,28 +1,5 @@
 [
    {
-      "artist":"Muse",
-      "year":2015,
-      "album":"Drones",
-      "_id":"557d899896055be8584edebe",
-      "tracks":[
-         {
-            "name":"Psycho",
-            "length":"05:17",
-            "track":3
-         },
-         {
-            "name":"Mercy",
-            "length":"03:51",
-            "track":4
-         },
-         {
-            "name":"Reapers",
-            "length":"05:59",
-            "track":5
-         }
-      ]
-   },
-   {
       "artist":"The Black Keys",
       "year":2010,
       "album":"Brothers",

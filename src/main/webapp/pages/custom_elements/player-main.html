@@ -30,20 +30,19 @@
 				background: none;
 			};
 		}
-		paper-toolbar.medium-tall
+		paper-toolbar
 	    {
-	    	background-color:var(--paper-blue-700);
+	    	background-color:transparent;
+	    	color:black;
 	    }
 	</style>
 	<template>
-		<paper-toolbar class="medium-tall">
+		<paper-toolbar>
 			<paper-icon-button style="width:27px" icon="list" on-click="showPlayList"></paper-icon-button>
-			<div class="title">Playing</div>
-			<paper-icon-button style="width:27px" icon="close"></paper-icon-button>
 		</paper-toolbar>
 		
 		<player-list id="playListContainer" playing-track="{{currentTrack}}" play-list="[[toPlayTracks]]"></player-list>
-		<player-playing id="playingContainer" currently-playing="{{currentTrack}}"></player-playing>
+		<player-playing id="playingContainer" currently-playing="{{currentTrack}}" on-playback-end="playBackEnded"></player-playing>
 	</template>
 	<script type="text/javascript">
 		var playing = false;
@@ -79,8 +78,13 @@
 			},
 		   	showPlayList:function()
 		   	{
-		   		this.$$("#playingContainer").show();
+		   		//this.$$("#playingContainer").show();
+		   		this.$$("#playListContainer").style.display="block";
 		   	},
+		   	playBackEnded:function()
+		   	{
+		   		this.$$("#playListContainer").playNextTrack();
+		   	}
 		});
 	</script>
 </dom-module>

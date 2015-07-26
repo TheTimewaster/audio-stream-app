@@ -1,0 +1,32 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="album-detail.html">
+<link rel="import" href="album-list.html">
+<dom-module id="album-view">
+	<style>
+		:host {
+			display: block;
+		}
+	</style>
+	<template>
+		<neon-animated-pages selected="0" id="albumView">
+			<album-list on-album-clicked="albumClicked" id="albumList"></album-list>
+			<album-detail id="albumDetail" id="albumDetail"></album-detail>
+		</neon-animated-pages>
+	</template>
+	<script>
+		Polymer({
+			is: 'album-view',
+			albumClicked:function(e)
+			{
+				console.log(e.detail.obj);
+				this.$$("#albumDetail").album = e.detail.obj;
+				this.$$("#albumView").selected = 1;
+			},
+			resetAlbumView:function()
+			{
+				this.$$("#albumView").selected = 0;
+			}
+		});
+	</script>
+</dom-module>

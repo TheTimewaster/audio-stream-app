@@ -1,0 +1,130 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<dom-module id="album-detail">
+	<style>
+		:host {
+			display: block;
+			align-content: center;
+		}
+		.albumCard
+		{
+			margin-left:auto;
+			margin-right:auto;
+			margin-top:16px;
+			border-radius: 2px;
+			display: block;
+			width: auto;
+			padding-bottom: 16px;
+			background-color:var(--paper-grey-50);
+			width:700px;
+		}
+		.albumRow
+		{
+			display: flex;
+			width: auto;
+			position:relative;
+		}
+		.albumRow:hover
+		{
+			background-color: var(--paper-grey-100);
+		}
+		.albumRow:hover .playIcon
+		{
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.albumRow:hover span
+		{
+			display: none;
+		}
+		.playIcon
+		{
+			display: none;
+			width: 24px;
+			height: 24px;
+			top: 2px;
+			left: 8px;
+			position: absolute;
+			z-index: 3;
+		}
+		.albumHeader
+		{
+			display: inline-flex;
+			display: -webkit-inline-flex;
+		}
+		.albumCover
+		{
+			background-color: gray;
+			width: 200px;
+			height: 200px;
+		}
+		.albumTitle
+		{
+			margin: 16px;
+		}
+	</style>
+	<template>
+		<paper-material class="albumCard" elevation="1">
+			<div class="albumHeader">
+				<div class="albumCover"></div>
+				<div class="albumTitle">
+					<h1>{{album.album}}</h1>
+					<h3>{{album.artist}}</h3>
+				</div>
+			</div>
+			<template is="dom-repeat" items="{{album.tracks}}" as="track">
+				<paper-item class="albumRow">
+					<div class="album-column" style="width:40px;text-align:right">
+					<span style="margin-right:25px">{{track.track}}</span>
+					<paper-icon-button class="playIcon" on-click="trackFromAlbumPlayClicked" icon="av:play-arrow"></paper-icon-button>
+					</div>
+					<div class="album-column" style="flex:1;-webkit-flex:1;">{{track.name}}</div>
+					<div class="album-column" style="width:50px;">{{track.length}}</div>
+				</paper-item>
+			</template>
+		</paper-material>
+	</template>
+	<script>
+		Polymer({
+			is: 'album-detail',
+			properties:
+			{
+				album:
+				{
+					type:Object,
+				}
+			},
+			trackFromAlbumPlayClicked: function(e)
+			{
+				if(!(typeof e.model.track.file === 'undefined'))
+				{
+					var albumList = this.$$("#albumList");
+					var toPlayTracksObject = {
+						tracks:null,
+						startIndex:0
+					};
+					var newArray = [];
+					var albumModel = albumList.modelForElement(e.target).album;
+
+					for (var i = 0; i < albumList.modelForElement(e.target).album.tracks.length; i++) 
+					{
+						var newTrackObject = albumList.modelForElement(e.target).album.tracks[i];
+						if(newTrackObject == e.model.track)
+						{
+							toPlayTracksObject.startIndex = i
+						}
+
+						newTrackObject.album = albumModel.album;
+						newTrackObject.artist = albumModel.artist;
+
+						newArray.push(newTrackObject);
+					};
+
+					toPlayTracksObject.tracks = newArray;
+
+					this.toPlayTracks = toPlayTracksObject;
+				}
+			},
+		});
+	</script>
+</dom-module>
