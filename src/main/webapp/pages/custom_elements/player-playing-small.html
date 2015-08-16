@@ -1,0 +1,108 @@
+<link rel="import" href="player-controller.html">
+<dom-module id="player-playing-small">
+	<style>
+		:host {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			height:100vh;
+		}
+		#playingAlbumCover
+		{
+			background-color: var(--paper-grey-500);
+			width:100%;
+			height:360px;
+		}
+		#playerTrackContainer
+		{
+			display: block;
+			text-align: center;
+			margin-top: 8px;
+			margin-bottom: 8px;
+			height: 70px;
+			position:relative;
+			width:100%;
+		}
+		p
+		{
+			@apply(--paper-font-subhead);
+			margin:0;
+		}
+		.playerPlayingHeader
+		{
+			@apply(--paper-font-headline);
+		}
+		#playerController
+		{
+			align-self: bottom;
+			width:100%;
+		}
+		.playerControlContainer paper-slider
+		{
+			width: 100%;
+		}
+		.playerControl
+		{
+			width: 100%;
+			display: flex;
+			display: -webkit-flex;
+			justify-content:center;
+			align-items:center;
+			-webkit-justify-content:center;
+			-webkit-align-items:center;
+			padding-bottom: 8px;
+		}
+		.playerControlContainer
+		{
+			width: 100%;
+		}
+		paper-icon-button.larger::shadow #icon
+		{
+			width: 48px;
+			height: 48px;
+		}
+	</style>
+	<template>
+		<div id="playingAlbumCover">
+			
+		</div>
+		
+		<div id="playerTrackContainer">
+			<span class="playerPlayingHeader">{{currentlyPlaying.name}}</span>
+			<p>{{currentlyPlaying.artist}}</br>{{currentlyPlaying.album}}</p>
+		</div>
+		<!-- <player-controller id="playerController" url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller> -->
+		<div class="playerControlContainer">
+			<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="sliderSeek" value="{{playbackProgress}}">
+			</paper-slider>
+			
+			<div class="playerControl">
+				<paper-icon-button icon="av:repeat" disabled></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-previous"></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:play-arrow" on-click="playClicked" id="playButton"></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-next"></paper-icon-button>
+				<paper-icon-button icon="av:shuffle" disabled></paper-icon-button>
+			</div>
+		</div>	
+	</template>
+	<script>
+		Polymer({
+			is: 'player-playing-small',
+			properties:
+			{
+				playbackProgress:
+				{
+					value:0
+				},
+				currentlyPlaying:
+				{
+					type:Object
+				}
+			},
+			ready:function()
+			{
+
+			}
+		});
+	</script>
+</dom-module>

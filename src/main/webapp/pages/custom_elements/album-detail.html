@@ -1,21 +1,25 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <dom-module id="album-detail">
 	<style>
 		:host {
 			display: block;
 			align-content: center;
 		}
-		.albumCard
+		#albumCard
 		{
 			margin-left:auto;
 			margin-right:auto;
 			margin-top:16px;
+			margin-bottom:16px;
 			border-radius: 2px;
 			display: block;
-			width: auto;
 			padding-bottom: 16px;
 			background-color:var(--paper-grey-50);
-			width:700px;
+			width:90%;
 		}
 		.albumRow
 		{
@@ -25,7 +29,7 @@
 		}
 		.albumRow:hover
 		{
-			background-color: var(--paper-grey-100);
+			background-color: var(--paper-grey-300);
 		}
 		.albumRow:hover .playIcon
 		{
@@ -47,41 +51,69 @@
 			position: absolute;
 			z-index: 3;
 		}
-		.albumHeader
+		#albumHeader
 		{
 			display: inline-flex;
 			display: -webkit-inline-flex;
+			width:100%;
+			border-bottom:1px solid var(--paper-grey-300);
 		}
-		.albumCover
+		#albumCover
 		{
-			background-color: gray;
-			width: 200px;
-			height: 200px;
+			background-color: var(--paper-blue-500);
+			width: 240px;
+			height:240px;
 		}
-		.albumTitle
+		#albumTitle
 		{
 			margin: 16px;
+			height:50%;
+			max-width:100%;
+		}
+		#albumPlay
+		{
+			position:absolute;
+			top:213px;
+			right:16px;
+		}
+		#albumTracks
+		{
+			margin-top:36px;
+		}
+		#albumBackground{
+			position: fixed;
+			height:100vh;
+			width:100vw;
+			background-color:var(--paper-grey-50);
 		}
 	</style>
 	<template>
-		<paper-material class="albumCard" elevation="1">
-			<div class="albumHeader">
-				<div class="albumCover"></div>
-				<div class="albumTitle">
+		<div id="albumBackground">
+
+		</div>
+		<paper-material id="albumCard" elevation="1" animated>
+			<div id="albumHeader">
+				<div id="albumCover">
+					
+				</div>
+				<div id="albumTitle">
 					<h1>{{album.album}}</h1>
 					<h3>{{album.artist}}</h3>
 				</div>
+				<paper-fab id="albumPlay" on-click="_albumPlayClicked" icon="av:play-arrow"></paper-fab>
 			</div>
-			<template is="dom-repeat" items="{{album.tracks}}" as="track">
-				<paper-item class="albumRow">
-					<div class="album-column" style="width:40px;text-align:right">
-					<span style="margin-right:25px">{{track.track}}</span>
-					<paper-icon-button class="playIcon" on-click="trackFromAlbumPlayClicked" icon="av:play-arrow"></paper-icon-button>
-					</div>
-					<div class="album-column" style="flex:1;-webkit-flex:1;">{{track.name}}</div>
-					<div class="album-column" style="width:50px;">{{track.length}}</div>
-				</paper-item>
-			</template>
+			<div id="albumTracks">
+				<template is="dom-repeat" items="{{album.tracks}}" as="track">
+					<paper-item class="albumRow">
+						<div class="album-column" style="width:40px;text-align:right">
+						<span style="margin-right:25px">{{track.track}}</span>
+						<paper-icon-button class="playIcon" on-click="_trackFromAlbumPlayClicked" icon="av:play-arrow"></paper-icon-button>
+						</div>
+						<div class="album-column" style="flex:1;-webkit-flex:1;">{{track.name}}</div>
+						<div class="album-column" style="width:50px;">{{track.length}}</div>
+					</paper-item>
+				</template>	
+			</div>
 		</paper-material>
 	</template>
 	<script>
@@ -92,39 +124,106 @@
 				album:
 				{
 					type:Object,
-				}
+				},
+				sharedElements: {
+		        type: Object,
+		        value: function() {
+		          return {
+		            'heroCover': this.$.albumCover
+		          }
+		        }
+		      },
+				animationConfig: {
+		        type: Object,
+		        value: function() {
+		          return {
+		            'entry': [{
+		              name: 'hero-animation',
+		              id: 'heroCover',
+		              toPage: this,
+		              timing:
+		              {
+		              	delay:200
+		              }
+		            },
+		            {
+		            	name:"fade-in-animation",
+		            	node:this.$.albumTracks,
+		            	timing:{
+		            		delay:600
+		            	}
+		            },
+		            {
+		            	name:"fade-in-animation",
+		            	node:this.$.albumTitle,
+		            	timing:{
+		            		delay:400
+		            	}
+		            },
+		            {
+		            	name:"scale-up-animation",
+		            	node:this.$.albumPlay,
+		            	timing:{
+		            		delay:800
+		            	}
+		            }],
+		            'exit': [{
+		              name: 'transform-animation',
+		              transformFrom: 'none',
+		              transformTo: 'translate(0px,200vh)',
+		              node: this
+		            }]
+		          }
+		        }
+		      }
 			},
-			trackFromAlbumPlayClicked: function(e)
+			behaviors: [
+		      Polymer.NeonSharedElementAnimatableBehavior
+		    ],
+		   	listeners:{
+	    		"neon-animation-finish":"_onAnimationFinish"
+		    },
+		    _onAnimationFinish:function()
+		    {
+		    	console.log("finished");
+		    },
+			_trackFromAlbumPlayClicked: function(e)
 			{
 				if(!(typeof e.model.track.file === 'undefined'))
 				{
-					var albumList = this.$$("#albumList");
-					var toPlayTracksObject = {
-						tracks:null,
-						startIndex:0
-					};
-					var newArray = [];
-					var albumModel = albumList.modelForElement(e.target).album;
+					var newPlayListObject = {tracks:[], startIndex:0};
 
-					for (var i = 0; i < albumList.modelForElement(e.target).album.tracks.length; i++) 
+					for (var i = 0; i < this.album.tracks.length; i++) 
 					{
-						var newTrackObject = albumList.modelForElement(e.target).album.tracks[i];
-						if(newTrackObject == e.model.track)
+						var newTrackObject = this.album.tracks[i];
+						newTrackObject.album = this.album.album;
+						newTrackObject.artist = this.album.artist;
+
+						newPlayListObject.tracks.push(newTrackObject);
+
+						if(e.model.track == this.album.tracks[i])
 						{
-							toPlayTracksObject.startIndex = i
+							newPlayListObject.startIndex = i;
 						}
-
-						newTrackObject.album = albumModel.album;
-						newTrackObject.artist = albumModel.artist;
-
-						newArray.push(newTrackObject);
 					};
 
-					toPlayTracksObject.tracks = newArray;
-
-					this.toPlayTracks = toPlayTracksObject;
+					this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
 				}
 			},
+			_albumPlayClicked:function()
+			{
+				var newPlayListObject = {tracks:[], startIndex:0};
+				for (var i = 0; i < this.album.tracks.length; i++) 
+				{
+					var newTrackObject = this.album.tracks[i];
+					newTrackObject.album = this.album.album;
+					newTrackObject.artist = this.album.artist;
+
+					newPlayListObject.tracks.push(newTrackObject);
+				};
+
+				this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
+			}
 		});
 	</script>
 </dom-module>

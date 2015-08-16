@@ -1,112 +1,93 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/neon-animation/animations/slide-down-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/scale-down-animation.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../bower_components/neon-animation/neon-animations.html">
-<link rel="import" href="../bower_components/neon-animation/animations/transform-animation.html">
-<link rel="import" href="player-controller.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="player-playing-small.html">
+<link rel="import" href="player-playing-tiny.html">
 <dom-module id="player-playing">
 	<style>
 		:host {
-			display: block;
-			position: absolute;
-		}
-		#playingAlbumCover
-		{
-			background-color: var(--paper-grey-500);
-			width:400px;
-			height:400px;
-		}
-		#playerTrackContainer
-		{
-			display: block;
-			text-align: center;
-			margin-top: 8px;
-			margin-bottom: 8px;
-			height: 70px;
-			position:relative;
+			display: flex;
 			width:100%;
+			min-height:60px;
+			height:10%;
 		}
-		p
+		@media(max-height:480px)
 		{
-			@apply(--paper-font-subhead);
-			margin:0;
+			:host
+			{
+				height:15%;
+			}
 		}
-		.playerPlayingHeader
+		#playerModeSelector
 		{
-			@apply(--paper-font-headline);
+			width:100%;
+			height:100%;
 		}
 	</style>
 	<template>
-		<div id="playingAlbumCover">
-				
-		</div>
-		
-		<div id="playerTrackContainer">
-			<span class="playerPlayingHeader">{{currentlyPlaying.name}}</span>
-			<p>{{currentlyPlaying.artist}}</br>{{currentlyPlaying.album}}</p>
-		</div>
-		<player-controller url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller>
+		<neon-animated-pages id="playerModeSelector" selected="0">
+			<player-playing-small playback-progress="{{playBackProgress}}" currently-playing="[[currentlyPlaying]]"></player-playing-small>
+			<player-playing-tiny on-change-to-small="changePlayerMode(small)"></player-playing-tiny>
+		</neon-animated-pages>
+		<audio id="audioElement">
+			<source id="sourceElement" src="" type="audio/mpeg" codecs="mp3"/>
+		</audio>
 	</template>
 	<script>
+		var audioElement;
+
 		Polymer({
 			is: 'player-playing',
-			behaviors:
-			[
-				Polymer.NeonAnimationRunnerBehavior
-			],
 			properties:
 			{
 				currentlyPlaying:
 				{
 					type:Object
-				}/*,
-				animationConfig: {
-			        type: Object,
-			        value: function() {
-			          return {
-			            'entry': [{
-			              	name: 'transform-animation',
-							node: this,
-							transformTo:"translateY(265px)"
-			            },
-			            {
-			              	name: 'transform-animation',
-							node: this.$.playingAlbumCover,
-							transformTo:"scale(0.3) translate(-50%, 50%)"
-							
-			            },
-			            ],
-			            'exit': [{
-			              name: 'fade-out-animation',
-			              node: this
-			            }]
-			          }
-			        }
-		      	}*/
+				},
+				playBackProgress:
+				{
+					value:0
+				}
 			},
-			listeners: {
-		    	'neon-animation-finish': '_onAnimationFinish'
-		    },
+			ready:function()
+			{
+				audioElement = this.$$('#audioElement');
+
+				audioElement.ontimeupdate = this.playBackRunning;
+
+				//track ended event
+				audioElement.onpause = this.playBackEnded;
+			},
 			concatStreamingURL:function(objectID)
 			{
 				if (objectID != null) {
 					return "/api/stream/" + objectID;
 				};
 			},
-			_onAnimationFinish:function()
+			changePlayerMode:function(mode)
 			{
-
+				if(mode == "small")
+				{
+					this.$.playerModeSelector.selected = 0;
+				}
+				else
+				{
+					this.$.playerModeSelector.selected = 1;
+				}
 			},
-			show: function() 
+			playBackRunning:function()
 			{
-		      	this.playAnimation('entry');
-		    },
-		    hide: function() 
-		    {
-		      	this.playAnimation('exit');
-		    }
-
+				if(Math.round(300 * audioElement.currentTime/audioElement.duration) > playBackProgress)
+					{
+						this.playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
+					}
+			},
+			playBackEnded:function()
+			{
+				if(audioElement.currentTime == audioElement.duration)
+		   		{
+		   			//playback ended
+		   		}
+			}
 		});
 	</script>
 </dom-module>

@@ -1,0 +1,65 @@
+<dom-module id="player-playing-tiny">
+	<style>
+		:host {
+			height:100%;
+			width:100%;
+			display:block;
+		}
+		#playerTinyContainer
+		{
+			display:flex;
+			/*align-self: flex-end;*/
+			width:100%;
+			height:100%;
+			background-color:var(--paper-grey-100);
+			padding:0;
+		}
+		#playerTinyContainer:hover
+		{
+			cursor:pointer;
+		}
+		#playerTinyCover
+		{
+			width:60px;
+			height:60px;
+			background-color:var(--paper-grey-700);
+			margin-left:0px;
+
+		}
+		#playerTinyInfo
+		{
+			margin-left:8px;
+			margin-right:8px;
+		}
+	</style>
+	<template>
+		<!--3rd appeareance of the player. Contains only the cover, track name, artist name and play/pause button-->
+		<paper-item id="playerTinyContainer" on-click="changeToSmall">
+			<div id="playerTinyCover">
+
+			</div>
+			<paper-item-body two-line id="playerTinyInfo">
+				<span>The Czar - I. Usurper II. Escape III. Martyr IV. Spiral</span>
+				<span secondary>My name is not Jon Doe</span>
+			</paper-item-body>
+			<paper-icon-button icon="av:play-arrow"></paper-icon-button>
+		</paper-item>
+		
+	</template>
+	<script>
+		Polymer({
+			is: 'player-playing-tiny',
+			properties:
+			{
+				currentlyPlaying:
+				{
+					type:Object
+				}
+			},
+			changeToSmall:function () 
+			{
+				this.fire("changeToSmall");
+			}
+		});
+	</script>
+</dom-module>

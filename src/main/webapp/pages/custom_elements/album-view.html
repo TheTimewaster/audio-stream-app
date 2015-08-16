@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animation.html">
 <link rel="import" href="album-detail.html">
 <link rel="import" href="album-list.html">
 <dom-module id="album-view">
@@ -19,11 +20,11 @@
 			is: 'album-view',
 			albumClicked:function(e)
 			{
-				console.log(e.detail.obj);
 				this.$$("#albumDetail").album = e.detail.obj;
 				this.$$("#albumView").selected = 1;
+				this.fire(e.name);
 			},
-			resetAlbumView:function()
+			resetView:function()
 			{
 				this.$$("#albumView").selected = 0;
 			}

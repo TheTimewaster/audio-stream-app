@@ -1,0 +1,20 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="artist-list.html">
+<dom-module id="artist-view">
+	<style>
+		:host {
+			display: block;
+		}
+	</style>
+	<template>
+		<neon-animated-pages selected="0" id="artistView">
+			<artist-list id="artist-list"></artist-list>
+		</neon-animated-pages>
+	</template>
+	<script>
+		Polymer({
+			is: 'artist-view'
+		});
+	</script>
+</dom-module>

@@ -31,6 +31,8 @@
     "paper-progress": "PolymerElements/paper-progress#~1.0.1",
     "paper-slider": "PolymerElements/paper-slider#~1.0.3",
     "paper-tabs": "PolymerElements/paper-tabs#~1.0.1",
-    "paper-drawer-panel": "PolymerElements/paper-drawer-panel#~1.0.3"
+    "paper-drawer-panel": "PolymerElements/paper-drawer-panel#~1.0.3",
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-signals": "PolymerElements/iron-signals#^1.0.0"
   }
 }

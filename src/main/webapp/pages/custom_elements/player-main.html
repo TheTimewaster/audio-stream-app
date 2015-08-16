@@ -1,48 +1,55 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/scale-down-animation.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="player-list.html">
 <link rel="import" href="player-playing.html">
 <dom-module id="player-main">
 	<style type="text/css">
 		:host
 		{
-			height: 100%;	
-		}
-		#detailPlayer
-		{
-			width: 400px;
-			display: block;
-			border-radius: 2px;
+			width:100%;
+			height:100vh;
+			display:flex;
+			flex-direction: column;
+			background-color:var(--paper-grey-50);
+			box-shadow:0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 			position:relative;
 		}
-		paper-toolbar.playerHeader
+		#toggleShowPlayList
 		{
-			z-index:10;
-			--paper-toolbar:
-			{
-				background: none;
-			};
+			position:absolute;
+			top:0px;
+			left: 0px;
+			z-index:100;
+			color:white;
 		}
-		paper-toolbar
-	    {
-	    	background-color:transparent;
-	    	color:black;
-	    }
+		#playingContainer
+		{
+			width:100%;
+		}
+		#playerVertFlex
+		{
+			display:flex;
+			flex-direction: column;
+			align-items: flex-start;
+			height:100%;
+		}
 	</style>
 	<template>
-		<paper-toolbar>
-			<paper-icon-button style="width:27px" icon="list" on-click="showPlayList"></paper-icon-button>
-		</paper-toolbar>
-		
-		<player-list id="playListContainer" playing-track="{{currentTrack}}" play-list="[[toPlayTracks]]"></player-list>
-		<player-playing id="playingContainer" currently-playing="{{currentTrack}}" on-playback-end="playBackEnded"></player-playing>
+			<paper-icon-button id="toggleShowPlayList" icon="list" on-click="showPlayList"></paper-icon-button>
+			<div id="playerVertFlex">
+				<player-list id="playListContainer" play-list="[[toPlayTracks]]"></player-list>
+				<player-playing id="playingContainer" currently-playing="{{currentTrack}}" on-playback-end="playBackEnded"></player-playing>
+			</div>
+		<iron-signals on-iron-signal-playlist-update="updatePlayList"></iron-signals>
 	</template>
 	<script type="text/javascript">
 		var playing = false;
@@ -53,7 +60,13 @@
 			{
 				toPlayTracks:
 				{
-					type:Object
+					type:Object,
+					notify:true
+				},
+				currentTrack:
+				{
+					type:Object,
+					notify:true
 				},
 			   _showing: {
 			        type: Boolean,
@@ -66,24 +79,29 @@
 					{
 						"tracks":[
 							{
-								"name":"Nothing to see here",
+								"name":"Nothing to see here.",
 								"artist":"foo",
-								"album":"bar"
+								"album":"Hello World!",
+								"length":"3:56"
 							}
 						],
 						"startIndex":0
-					}
-				;
-				
+					};				
 			},
 		   	showPlayList:function()
 		   	{
 		   		//this.$$("#playingContainer").show();
-		   		this.$$("#playListContainer").style.display="block";
+		   		this.$.playListContainer.changeVisible();
+		   		this.$.playingContainer.changePlayerMode("tiny");
 		   	},
 		   	playBackEnded:function()
 		   	{
 		   		this.$$("#playListContainer").playNextTrack();
+		   	},
+		   	updatePlayList:function(e, detail, sender)
+		   	{
+		   		this.toPlayTracks = detail;
+		   		this.currentTrack = detail.tracks[detail.startIndex];
 		   	}
 		});
 	</script>

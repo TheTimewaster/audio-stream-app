@@ -1,19 +1,22 @@
 <link rel="import" href="album-view.html">
+<link rel="import" href="artist-view.html">
 <link rel="import" href="player-container.html">
 <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
-<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <dom-module id="webapp-main">
 	<style type="text/css" is="custom-style">
 		:host
 		{
+			width:100%;
 			height: 100%;
   			margin: 0;
   			overflow: hidden;
+  			display:block;
 		}
 		paper-toolbar.medium-tall
     {
@@ -29,7 +32,7 @@
       		background-color:var(--paper-blue-500);
     	};
 
-			--paper-scroll-header-panel-condensed-header:
+		--paper-scroll-header-panel-condensed-header:
 	    {
       		background-color:var(--paper-blue-700);
 
@@ -44,35 +47,99 @@
 	{
 		color:var(--paper-grey-500);
 	}
+	paper-icon-button #navigationIcon
+	{
+		--paper-icon-button-disabled-text: red;
+	}
+	#playerContainer
+	{
+		width:320px;
+		display:block;
+	}
+	#mainContainer
+	{
+		flex: 1;
+		width:100%;
+		height:100%;
+	}
+	#webappContainer
+	{
+		display:flex;
+		height:100%;
+		width:100%;
+		justify-content: flex-end;
+	}
+	@media(min-width:1024px)
+	{
+		#playerContainer
+		{
+			width:320px;	
+		}
+	}
+	@media(max-width:1024px)
+	{
+		#playerContainer
+		{
+			position: fixed;
+			bottom:0px;
+			left:50%;
+			margin-left:-300px;
+			width:600px;	
+		}
+		#webappContainer
+		{
+			display:block;
+			height:100%;
+			justify-content: center;
+		}
+	}
+	@media(max-width:600px)
+	{
+		#playerContainer
+		{
+			position: fixed;
+			bottom:0px;
+			left:0px;
+			margin-left:0px;	
+			width:100%;
+		}
+		#webappContainer
+		{
+			display:block;
+			height:100%;
+			justify-content: center;
+		}
+	}
 	</style>
 	<template>
-		<paper-drawer-panel right-drawer drawer-width="400px">
-			<paper-header-panel drawer mode="seamed">
+		<iron-media-query query="min-width: 640px" queryMatches="{{largeScreen}}">
+		</iron-media-query>
+		<div id="webappContainer">
+			<div id="mainContainer">
+				<paper-scroll-header-panel fixed main>
+					<paper-toolbar class="medium-tall">
+						<paper-icon-button id="navigationIcon" disabled icon="av:play-arrow" on-click="getBack"></paper-icon-button>
+					  <span class="title">{{title}}</span>
+					  <paper-tabs id="pageTabs" selected="{{selected}}" class="bottom self-end" on-click="tabClicked">
+				  		<paper-tab>ARTISTS</paper-tab>
+				  		<paper-tab>ALBUMS</paper-tab>
+				  		<paper-tab>TRACKS</paper-tab>
+					  </paper-tabs>
+					</paper-toolbar>
+					
+					<neon-animated-pages id="pageContainer" selected="{{selected}}">
+						<artist-view id="artistView"></artist-view>
+						<album-view id="albumView" on-album-clicked="albumClicked"></album-view>
+						<div class="noContentInfo">
+							<h1>No tracks to show</h1>
+						</div>
+					</neon-animated-pages>	
+				</paper-scroll-header-panel>
+			</div> 
+			<div id="playerContainer">
 				<player-container tracks-array="[[val]]"></player-container>
-			</paper-header-panel>
-			<paper-scroll-header-panel keep-condensed-header scroll-away-topbar main>
-				<paper-toolbar class="medium-tall">
-				  <span class="title">My Application</span>
-				  <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-				  <paper-tabs id="pageTabs" selected="{{selected}}" class="bottom self-end" on-click="tabClicked">
-			  		<paper-tab>ARTISTS</paper-tab>
-			  		<paper-tab>ALBUMS</paper-tab>
-			  		<paper-tab>TRACKS</paper-tab>
-				  </paper-tabs>
-				</paper-toolbar>
-				<!--encapsulate from playback function-->
-				<neon-animated-pages id="pageContainer" selected="{{selected}}">
-					<div class="noContentInfo">
-						<h1>No artists to show</h1>
-					</div>
-					<album-view id="albumView"></album-view>
-					<div class="noContentInfo">
-						<h1>No tracks to show</h1>
-					</div>
-				</neon-animated-pages>	
-			</paper-scroll-header-panel>
-		</paper-drawer-panel>
-
+			</div>
+		</div>
 	</template>
 	<script>
 		Polymer({
@@ -82,14 +149,51 @@
 				selected:
 				{
 					value:"1"
+				},
+				title:
+				{
+					value:"My Application",
+					defaultValue:function(){
+						return "My Application";
+					}
+
+				},
+				isViewRoot:
+				{
+					type:Boolean,
+					value:true
 				}
 			},
 			tabClicked:function(e)
+			{	
+				this.$$("#albumView").resetView();
+				this.selected = this.$$("#pageTabs").selected;
+				this._returnToRoot();
+			},
+			albumClicked:function(e)
 			{
-				if(this.$$("#pageTabs").selected == 1)
+				this.title = e.detail.obj.album;
+				this.$.navigationIcon.icon="arrow-back";
+				this.$.navigationIcon.disabled = false;
+				this.isViewRoot = false;
+			},
+			getBack:function(e)
+			{
+				if(!this.isViewRoot)
 				{
-					this.$$("#albumView").resetAlbumView();
+					if(this.selected == 1)
+					{
+						this.$$("#albumView").resetView();
+					}
+					this._returnToRoot();
 				}
+			},
+			_returnToRoot:function()
+			{
+				this.isViewRoot == true;
+				this.$.navigationIcon.icon="av:play-arrow";
+				this.title = "My Application"
+				this.$.navigationIcon.disabled = true;
 			}
 		});
 	</script>

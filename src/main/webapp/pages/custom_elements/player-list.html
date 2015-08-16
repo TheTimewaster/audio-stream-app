@@ -1,24 +1,35 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
 <dom-module id="player-list">
 	<style>
 		:host {
-			z-index:5;
 			display:none;
 			width:100%;
-			position:absolute;
-			top:64px;
+			height:90%;
+			flex-grow: 1;
+/*			position:absolute;
+			top:0px;*/
+		}
+		@media(max-height:480px)
+		{
+			:host
+			{
+				height:80%;
+			}
 		}
 		#listContainer
 		{
-			height:400px;
+			padding-top:48px;
+			min-height:150px;
 			background-color:var(--paper-grey-50);
-			overflow: auto;
+			max-height:90%;
+			overflow:scroll;
 		}
 		.playListRow:hover
 		{
-			background-color: var(--paper-grey-300)
+			background-color: var(--paper-grey-300);
 		}
 		.playListRow .cover
 		{
@@ -27,26 +38,36 @@
 			background-color: var(--paper-red-50);
 			margin-right: 16px;
 		}
+		paper-header-panel #sideToolbar
+		{
+			--paper-toolbar-background:var(--paper-grey-50);
+			color:black;
+		}
+		.title
+		{
+			margin-left:0px!important;
+		}
 	</style>
 	<template>
-		<div id="listContainer">
+	<paper-header-panel mode="seamed">
+		<paper-toolbar class="" id="sideToolbar">
+		<span class="title">
+			Playlist Name
+		</span>
+		</paper-toolbar>
+		<div class="content">
 			<template is="dom-repeat" items="{{playList.tracks}}" as="track">
 				<paper-item class="playListRow">
-					<template is="dom-if" if="{{track.start}}">
-						<div class="cover" style="background-color:black"></div>
-					</template>
-					<template is="dom-if" if="{{!track.start}}">
-						<div class="cover"></div>
-					</template>
+					<div class="cover"></div>
 					<paper-item-body two-line>
 						<span>{{track.name}}</span>
 						<span secondary>{{concatAlbumAndArtistString(track.artist,track.album)}}</span>
 					</paper-item-body>
-					
 					<span>{{track.length}}</span>
 				</paper-item>
 			</template>
 		</div>
+	</paper-header-panel>
 	</template>
 	<script>
 		Polymer({
@@ -76,8 +97,7 @@
 			{
 				if(newValue != undefined)
 				{
-					this.playingTrack = newValue.tracks[newValue.startIndex]
-					console.log(this.playingTrack);
+					this.playingTrack = newValue.tracks[newValue.startIndex];
 				}
 			},
 			changeVisible:function()
@@ -102,13 +122,16 @@
 			{
 				//handling repeat and shuffle
 
-				//avoid out of array
 				var currentList = this.playList.tracks;
 				if(currentList.indexOf(this.playingTrack) != currentList.length)
 				{
 					var nextIndex = currentList.indexOf(this.playingTrack) + 1;
 					this.playingTrack = currentList[nextIndex];
 				}
+			},
+			isCurrentPlayingTrack:function(track)
+			{
+				return (this.playingTrack == track);
 			}
 		});
 	</script>

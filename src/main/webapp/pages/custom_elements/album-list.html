@@ -5,17 +5,19 @@
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
 <dom-module id="album-list">
 	<style type="text/css">
 		:host
 		{
 			width: 100%;
 			display: flex;
+			display: -webkit-flex;
 			padding-bottom: 40px;
 		}
 		paper-material.albumSmall
 		{
-			min-height:200px;
+			min-height:270px;
 			width:200px;
 			margin:16px;
 			cursor:pointer;
@@ -40,9 +42,20 @@
 		{
 			@apply(--paper-font-subhead);
 		}
+		#loadingOverlay
+		{
+			width:100vw;
+			height:100vh;
+			background-color:rgba(0, 0, 0, 0.5);
+			position: fixed;
+			top:0px;
+			left:0px;
+			z-index:100;
+			display:none;
+		}
 	</style>
 	<template>
-				<iron-ajax id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax on-request="requestingAlbum" on-response="responsingAlbum" id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
 			<paper-material elevation="1" class="albumSmall" on-click="albumClicked">
 				<div class="albumThumbnail">
@@ -52,24 +65,72 @@
 				</div>
 			</paper-material>
 		</template>
+		<div id="loadingOverlay">
+			
+		</div>
 	</template>
 	<script type="text/javascript">
-
 	Polymer({
 		is:"album-list",
 		properties:{
 			toPlayTracks:{
 				type:Object,
 				notify:true
-			}
+			},
+			animationConfig: {
+		        type: Object,
+		        value: function() {
+					return {
+						'entry':[{
+							name:'fade-in-animation',
+							node:this
+						}],
+			            'exit': [
+						{
+							name: 'hero-animation',
+			  				id: 'heroCover',
+							fromPage: this,
+							timing:{
+								delay:200
+							}
+			            }
+						]
+			         }
+			      }
+		      }
+		    
 		},
+		behaviors: [
+	      Polymer.NeonSharedElementAnimatableBehavior
+	    ],
 		shortenLongString:function(input)
 		{
 			return (input.length > 22) ? input.substring(0 , 22) + "..." : input;
 		},
-		albumClicked:function(e)
+		albumClicked:function(event)
 		{
-			this.fire("album-clicked", {obj:e.model.album});
+			var target = event.target;
+			while (target !== this && !target._templateInstance) {
+		        target = target.parentNode;
+		    }
+
+		    var coverTarget = target.querySelector(".albumThumbnail");
+
+			this.sharedElements = {
+				'heroCover': coverTarget
+		    };
+			this.fire("album-clicked", {album:target,obj:event.model.album});
+		},
+		requestingAlbum:function()
+		{
+			// if(this.$$("#ajax").loading)
+			// {
+			// 	this.$$("#loadingOverlay").style.display = "block";
+			// }
+		},
+		responsingAlbum:function()
+		{
+
 		}
 	});	
 	</script>
