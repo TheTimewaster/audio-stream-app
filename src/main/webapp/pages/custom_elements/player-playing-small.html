@@ -97,11 +97,20 @@
 				currentlyPlaying:
 				{
 					type:Object
+				},
+				playing:
+				{
+					type:Boolean
 				}
 			},
 			ready:function()
 			{
 
+			},
+			playClicked:function()
+			{
+				this.playing = !this.playing;
+				this.fire("playClicked", {playing: this.playing});
 			}
 		});
 	</script>

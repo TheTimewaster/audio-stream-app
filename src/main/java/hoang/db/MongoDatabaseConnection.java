@@ -9,14 +9,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bson.BSONObject;
-import org.bson.BsonArray;
-import org.bson.BsonDocument;
-import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBRef;
@@ -32,15 +29,16 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public class MongoDatabaseConnection
 {
-	public static final String	DEFAULT_MONGO_HOST	= "localhost";
-	public static final int	   DEFAULT_MONGO_PORT	= 27017;
-	public static final String	DEFAULT_DATABASE	= "music";
-	
-	public static final SimpleDateFormat SDF = new SimpleDateFormat("mm:ss");
+	public static final String	         DEFAULT_MONGO_HOST	= "localhost";
+	public static final int	             DEFAULT_MONGO_PORT	= 27017;
+	public static final String	         DEFAULT_DATABASE	= "music";
 
-	private MongoDatabase	   mongoDB;
+	public static final SimpleDateFormat	SDF	            = new SimpleDateFormat(
+	                                                                "mm:ss");
 
-	private MongoClient	       client;
+	private MongoDatabase	             mongoDB;
+
+	private MongoClient	                 client;
 
 	public MongoDatabaseConnection(String _host, int _port, String _database)
 	{
@@ -53,79 +51,75 @@ public class MongoDatabaseConnection
 		return mongoDB;
 	}
 
-//	@Deprecated
+	// @Deprecated
 	public String getAllDocumentsInCollection()
 	{
 		MongoCollection<Document> musicCollection = mongoDB
 		        .getCollection("db_album_metadata");
-		
+
 		MongoCursor<Document> cursor = musicCollection.find().iterator();
-		
+
 		JSONArray array = new JSONArray();
 
 		try
-		{	
-			while(cursor.hasNext())
-			{				
+		{
+			while (cursor.hasNext())
+			{
 				Document doc = cursor.next();
-				
+
 				Document document = new Document();
-				for(String s : doc.keySet())
+				for (String s : doc.keySet())
 				{
-					if(s.equals("_id"))
+					if (s.equals("_id"))
 					{
-						document.put(s, doc.get(s).toString());
-					}
-					else
+						document.put("id", doc.get(s).toString());
+					} else
 					{
-						if("tracks".equals(s))
+						if ("tracks".equals(s))
 						{
 							JSONArray tracks = new JSONArray();
-							List<Document> list = (ArrayList<Document>) doc.get(s);
-							for(Document innerDoc : list)
-							{	
+							List<Document> list = (ArrayList<Document>) doc
+							        .get(s);
+							for (Document innerDoc : list)
+							{
 								Document track = new Document();
-								for(String innerKey : innerDoc.keySet())
+								for (String innerKey : innerDoc.keySet())
 								{
-									if("file".equals(innerKey))
+									if ("file".equals(innerKey))
 									{
-										DBRef pointer = (DBRef) innerDoc.get(innerKey);
-										track.put(innerKey, pointer.getId().toString());
-										System.out.println(pointer.getId().toString());
-									}
-									else if("length".equals(innerKey))
+										DBRef pointer = (DBRef) innerDoc
+										        .get(innerKey);
+										track.put(innerKey, pointer.getId()
+										        .toString());
+									} else if ("length".equals(innerKey))
 									{
-										
-										track.put(innerKey, SDF.format(
-												new Date(
-														Long.parseLong(
-																innerDoc.get(innerKey).toString()
-																)
-																)
-												)
-												);
-										
-									}
-									else
+
+										track.put(innerKey, SDF
+										        .format(new Date(Long
+										                .parseLong(innerDoc
+										                        .get(innerKey)
+										                        .toString()))));
+
+									} else
 									{
-										track.put(innerKey, innerDoc.get(innerKey));
+										track.put(innerKey,
+										        innerDoc.get(innerKey));
 									}
 								}
 								tracks.put(track);
 							}
-							
+
 							document.put(s, tracks);
-						}
-						else
+						} else
 						{
 							document.put(s, doc.get(s));
 						}
 					}
 				}
-				
+
 				array.put(document);
 			}
-			
+
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -133,31 +127,48 @@ public class MongoDatabaseConnection
 		} finally
 		{
 			cursor.close();
-			client.close();
 		}
 
-		System.out.println(array.toString());
-		
 		return array.toString();
 	}
-	
+
 	public String getAllAlbumsFromCollection()
 	{
 		MongoCollection<Document> musicCollection = mongoDB
 		        .getCollection("db_album_metadata");
-		
-		Bson eq = new BasicDBObject("tracks",0);
-		
-		MongoCursor<Document> cursor = musicCollection.find().projection(eq).iterator();
-		
+
+		JSONArray array = new JSONArray();
+
+		Bson eq = new BasicDBObject("tracks", 0);
+
+		MongoCursor<Document> cursor = musicCollection.find().projection(eq)
+		        .iterator();
+
 		try
-		{	
-			while(cursor.hasNext())
+		{
+			while (cursor.hasNext())
 			{
 				Document doc = cursor.next();
-				System.out.println(doc.toJson());
+
+				Document document = new Document();
+
+				for (String s : doc.keySet())
+				{
+					if (s.equals("_id"))
+					{
+						document.put("id", doc.get(s).toString());
+					} else
+					{
+						if (!s.equals("tracks"))
+						{
+							document.put(s, doc.get(s));
+						}
+					}
+				}
+
+				array.put(document);
 			}
-			
+
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -165,21 +176,101 @@ public class MongoDatabaseConnection
 		} finally
 		{
 			cursor.close();
-			client.close();
 		}
-		
-		return "";
+
+		return array.toString();
 	}
-	
+
+	public String getAlbumFromCollection(String _albumID)
+	{
+		MongoCollection<Document> musicCollection = mongoDB
+		        .getCollection("db_album_metadata");
+
+		MongoCursor<Document> cursor = musicCollection.find(
+		        new BasicDBObject("_id", new ObjectId(_albumID))).iterator();
+
+		Document doc = null;
+
+//		Document document = new Document();
+		
+		JSONObject document = new JSONObject();
+		
+		try
+		{
+			while (cursor.hasNext())
+			{
+				doc = cursor.next();
+
+				for (String s : doc.keySet())
+				{
+					// extract the id
+					if (s.equals("_id"))
+					{
+						document.put(s, doc.get(s).toString());
+					} else
+					{
+						if ("tracks".equals(s))
+						{
+							JSONArray tracks = new JSONArray();
+							List<Document> list = (ArrayList<Document>) doc
+							        .get(s);
+							for (Document innerDoc : list)
+							{
+								Document track = new Document();
+								for (String innerKey : innerDoc.keySet())
+								{
+									if ("file".equals(innerKey))
+									{
+										DBRef pointer = (DBRef) innerDoc
+										        .get(innerKey);
+										track.put(innerKey, pointer.getId()
+										        .toString());
+									} else if ("length".equals(innerKey))
+									{
+
+										track.put(innerKey, SDF
+										        .format(new Date(Long
+										                .parseLong(innerDoc
+										                        .get(innerKey)
+										                        .toString()))));
+
+									} else
+									{
+										track.put(innerKey,
+										        innerDoc.get(innerKey));
+									}
+								}
+								tracks.put(track);
+							}
+
+							document.put(s, tracks);
+						} else
+						{
+							document.put(s, doc.get(s));
+						}
+					}
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			
+			cursor.close();
+		}
+		return document.toString();
+	}
+
+	@Deprecated
 	public String getDocumentInCollection(String _objectID)
 	{
 		String returnJSONString = "";
 
 		MongoCollection<Document> musicCollection = mongoDB
 		        .getCollection("db_album_metadata");
-		
-		MongoIterable<Document> iterable = musicCollection.find(new BasicDBObject("_id", _objectID));
-		
+
+		MongoIterable<Document> iterable = musicCollection
+		        .find(new BasicDBObject("_id", _objectID));
+
 		MongoCursor<Document> cursor = iterable.iterator();
 
 		try
@@ -201,7 +292,7 @@ public class MongoDatabaseConnection
 
 		return returnJSONString;
 	}
-	
+
 	@Deprecated
 	public InputStream getFirstFileFromMongoDB()
 	{
@@ -214,12 +305,12 @@ public class MongoDatabaseConnection
 		GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
 		return outputFile.getInputStream();
 	}
-	
+
 	public int getContentLength(String _objectID)
 	{
-			GridFS fs = new GridFS(client.getDB("music"), "db_files");
-			GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
-			return (int) outputFile.getLength();		
+		GridFS fs = new GridFS(client.getDB("music"), "db_files");
+		GridFSDBFile outputFile = fs.findOne(new ObjectId(_objectID));
+		return (int) outputFile.getLength();
 	}
 
 	public void putFileInMongoDB(String _fullPath)

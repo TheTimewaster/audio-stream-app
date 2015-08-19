@@ -94,14 +94,11 @@
 		   		this.$.playListContainer.changeVisible();
 		   		this.$.playingContainer.changePlayerMode("tiny");
 		   	},
-		   	playBackEnded:function()
-		   	{
-		   		this.$$("#playListContainer").playNextTrack();
-		   	},
 		   	updatePlayList:function(e, detail, sender)
 		   	{
 		   		this.toPlayTracks = detail;
 		   		this.currentTrack = detail.tracks[detail.startIndex];
+		   		this.$.playingContainer.startPlayBack();
 		   	}
 		});
 	</script>

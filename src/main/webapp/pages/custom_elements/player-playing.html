@@ -29,7 +29,7 @@
 			<player-playing-tiny on-change-to-small="changePlayerMode(small)"></player-playing-tiny>
 		</neon-animated-pages>
 		<audio id="audioElement">
-			<source id="sourceElement" src="" type="audio/mpeg" codecs="mp3"/>
+			<source id="sourceElement" src="{{loadStream(currentlyPlaying.file)}}" type="audio/mpeg" codecs="mp3"/>
 		</audio>
 	</template>
 	<script>
@@ -41,7 +41,7 @@
 			{
 				currentlyPlaying:
 				{
-					type:Object
+					type:Object,
 				},
 				playBackProgress:
 				{
@@ -57,7 +57,7 @@
 				//track ended event
 				audioElement.onpause = this.playBackEnded;
 			},
-			concatStreamingURL:function(objectID)
+			loadStream:function(objectID)
 			{
 				if (objectID != null) {
 					return "/api/stream/" + objectID;
@@ -87,6 +87,15 @@
 		   		{
 		   			//playback ended
 		   		}
+		   		else
+		   		{
+
+		   		}
+			},
+			startPlayBack:function()
+			{
+				this.$.audioElement.load();
+				this.$.audioElement.play();
 			}
 		});
 	</script>

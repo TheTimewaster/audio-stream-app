@@ -55,7 +55,7 @@
 		}
 	</style>
 	<template>
-		<iron-ajax on-request="requestingAlbum" on-response="responsingAlbum" id="ajax" auto url="../metadata.json" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax on-request="requestingAlbums" on-response="responsingAlbums" id="albumsAjax" auto url="/api/metadata/albums" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
 			<paper-material elevation="1" class="albumSmall" on-click="albumClicked">
 				<div class="albumThumbnail">
@@ -118,19 +118,24 @@
 
 			this.sharedElements = {
 				'heroCover': coverTarget
-		    };
+		   };
+
 			this.fire("album-clicked", {album:target,obj:event.model.album});
 		},
-		requestingAlbum:function()
+		requestingAlbums:function()
 		{
 			// if(this.$$("#ajax").loading)
 			// {
 			// 	this.$$("#loadingOverlay").style.display = "block";
 			// }
 		},
-		responsingAlbum:function()
+		responsingAlbums:function()
 		{
-
+			// this.$$("#loadingOverlay").style.display = "none";
+		},
+		refresh:function()
+		{
+			this.$$("#albumsAjax").generateRequest();
 		}
 	});	
 	</script>

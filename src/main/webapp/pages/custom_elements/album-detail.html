@@ -115,6 +115,7 @@
 				</template>	
 			</div>
 		</paper-material>
+		<iron-ajax id="albumAjax" handle-as="json" last-response="{{album}}"></iron-ajax>
 	</template>
 	<script>
 		Polymer({
@@ -223,6 +224,11 @@
 				};
 
 				this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
+			},
+			openAlbum:function(albID)
+			{
+				this.$$("#albumAjax").url = "/api/metadata/albums/" + albID;
+				this.$$("#albumAjax").generateRequest();
 			}
 		});
 	</script>

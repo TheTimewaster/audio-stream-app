@@ -20,13 +20,14 @@
 			is: 'album-view',
 			albumClicked:function(e)
 			{
-				this.$$("#albumDetail").album = e.detail.obj;
+				this.$$("#albumDetail").openAlbum(e.detail.obj.id);
 				this.$$("#albumView").selected = 1;
 				this.fire(e.name);
 			},
 			resetView:function()
 			{
 				this.$$("#albumView").selected = 0;
+				this.$$("#albumList").refresh();
 			}
 		});
 	</script>
