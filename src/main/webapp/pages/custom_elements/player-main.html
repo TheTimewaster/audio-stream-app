@@ -47,7 +47,7 @@
 			<paper-icon-button id="toggleShowPlayList" icon="list" on-click="showPlayList"></paper-icon-button>
 			<div id="playerVertFlex">
 				<player-list id="playListContainer" play-list="[[toPlayTracks]]"></player-list>
-				<player-playing id="playingContainer" currently-playing="{{currentTrack}}" on-playback-end="playBackEnded"></player-playing>
+				<player-playing id="playingContainer"></player-playing>
 			</div>
 		<iron-signals on-iron-signal-playlist-update="updatePlayList"></iron-signals>
 	</template>
@@ -63,15 +63,21 @@
 					type:Object,
 					notify:true
 				},
-				currentTrack:
+				currentIndex:
 				{
-					type:Object,
-					notify:true
+					type:Number,
+					value:0
 				},
 			   _showing: {
 			        type: Boolean,
 			        value: false
 		      	}
+			},
+			listeners:
+			{
+				'playingContainer.trackEnded':'playNextTrack',
+				'playingContainer.playerPreviousClicked':'playPreviousTrack',
+				'playingContainer.playerNextClicked':'playNextTrack'
 			},
 			ready:function()
 			{
@@ -97,8 +103,44 @@
 		   	updatePlayList:function(e, detail, sender)
 		   	{
 		   		this.toPlayTracks = detail;
-		   		this.currentTrack = detail.tracks[detail.startIndex];
-		   		this.$.playingContainer.startPlayBack();
+		   		this.currentIndex = detail.startIndex;
+		   		this.$.playingContainer.currentlyPlaying = detail.tracks[this.currentIndex]
+		   		this.$.playingContainer.startNewPlayBack();
+		   	},
+		   	playNextTrack:function(event)
+		   	{
+		   		this.currentIndex++;
+		   		if(this.currentIndex < this.toPlayTracks.tracks.length)
+		   		{
+		   			//end of playlist
+			   		this.$.playingContainer.currentlyPlaying = this.toPlayTracks.tracks[this.currentIndex]
+			   		if(event.detail.playing)
+			   		{
+			   			this.$.playingContainer.startNewPlayBack();
+			   		}
+		   		}
+		   		else
+		   		{
+		   			//reset playlist
+		   			this.currentIndex = 0;
+		   			this.$.playingContainer.currentlyPlaying = this.toPlayTracks.tracks[this.currentIndex];
+		   		}
+		   	},
+		   	playPreviousTrack:function(event)
+		   	{
+		   		if(this.currentIndex != 0)
+		   		{
+		   			this.currentIndex--;
+		   		}
+
+		   		this.$.playingContainer.currentlyPlaying = this.toPlayTracks.tracks[this.currentIndex];
+
+		   		console.log(event.detail);
+
+		   		if(event.detail.playing)
+		   		{
+		   			this.$.playingContainer.startNewPlayBack();
+		   		}
 		   	}
 		});
 	</script>

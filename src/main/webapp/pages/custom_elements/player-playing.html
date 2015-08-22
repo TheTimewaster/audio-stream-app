@@ -25,8 +25,8 @@
 	</style>
 	<template>
 		<neon-animated-pages id="playerModeSelector" selected="0">
-			<player-playing-small playback-progress="{{playBackProgress}}" currently-playing="[[currentlyPlaying]]"></player-playing-small>
-			<player-playing-tiny on-change-to-small="changePlayerMode(small)"></player-playing-tiny>
+			<player-playing-small id="playerSmall" playback-progress="{{playBackProgress}}" currently-playing="[[currentlyPlaying]]"></player-playing-small>
+			<player-playing-tiny id="playerTiny" on-change-to-small="changePlayerMode(small)"></player-playing-tiny>
 		</neon-animated-pages>
 		<audio id="audioElement">
 			<source id="sourceElement" src="{{loadStream(currentlyPlaying.file)}}" type="audio/mpeg" codecs="mp3"/>
@@ -42,17 +42,34 @@
 				currentlyPlaying:
 				{
 					type:Object,
+					observer:"_currentlyPlayingChanged"
 				},
 				playBackProgress:
 				{
-					value:0
+					type:Number,
+					value:0,
+					notify:true
 				}
+			},
+			listeners:
+			{
+				'playerSmall.playClicked':'playerPlayClicked',
+				'playerSmall.sliderSeeked':'playerSliderSeeked',
+				'playerSmall.previousClicked':'playerPreviousClicked',
+				'playerSmall.nextClicked':'playerNextClicked',
+				'playerTiny.playClicked':'playerPlayClicked'
 			},
 			ready:function()
 			{
 				audioElement = this.$$('#audioElement');
 
-				audioElement.ontimeupdate = this.playBackRunning;
+				audioElement.ontimeupdate = function()
+				{
+					if(Math.round(300 * audioElement.currentTime/audioElement.duration) > this.parentElement.playBackProgress)
+						{
+							this.parentElement.playBackProgress = Math.round(300 * audioElement.currentTime/audioElement.duration);
+						}
+				}
 
 				//track ended event
 				audioElement.onpause = this.playBackEnded;
@@ -76,26 +93,59 @@
 			},
 			playBackRunning:function()
 			{
-				if(Math.round(300 * audioElement.currentTime/audioElement.duration) > playBackProgress)
+				if(Math.round(300 * audioElement.currentTime/audioElement.duration) > this.playBackProgress)
 					{
 						this.playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
+						console.log(this.playBackProgress);
 					}
 			},
 			playBackEnded:function()
 			{
 				if(audioElement.currentTime == audioElement.duration)
 		   		{
-		   			//playback ended
+		   			this.parentElement.fire("trackEnded");
 		   		}
 		   		else
 		   		{
 
 		   		}
 			},
-			startPlayBack:function()
+			playerPlayClicked:function(event)
 			{
-				this.$.audioElement.load();
+				if(event.detail.playing)
+				{
+					audioElement.play();
+				}
+				else
+				{
+					audioElement.pause();
+				}
+			},
+			startNewPlayBack:function()
+			{
+				this._currentlyPlayingChanged();
 				this.$.audioElement.play();
+				this.$.playerSmall.playing = true;
+				this.$.playerTiny.playing = true;
+			},
+			playerSliderSeeked:function(event)
+			{
+				audioElement.currentTime = Math.round(event.detail.progress/300*audioElement.duration)
+			},
+			playerPreviousClicked:function(event)
+			{
+				this.fire("playerPreviousClicked", {playing:event.detail.playing});
+			},
+			playerNextClicked:function(event)
+			{
+				this.fire("playerNextClicked", {playing:event.detail.playing});
+			},
+			_currentlyPlayingChanged:function()
+			{
+				this.$.playerSmall.playing = false;
+				this.$.playerTiny.playing = false;
+				this.playBackProgress = 0;
+				this.$.audioElement.load();
 			}
 		});
 	</script>

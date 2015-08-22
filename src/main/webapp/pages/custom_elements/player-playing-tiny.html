@@ -42,7 +42,7 @@
 				<span>The Czar - I. Usurper II. Escape III. Martyr IV. Spiral</span>
 				<span secondary>My name is not Jon Doe</span>
 			</paper-item-body>
-			<paper-icon-button on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
+			<paper-icon-button id="playButton" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
 		</paper-item>
 		
 	</template>
@@ -57,7 +57,9 @@
 				},
 				playing:
 				{
-					type:Boolean
+					value:false,
+					type:Boolean,
+					observer:"playingChanged"
 				}
 			},
 			changeToSmall:function () 
@@ -68,6 +70,25 @@
 			{
 				this.playing = !this.playing;
 				this.fire("playClicked", {playing: this.playing});
+				if(this.playing)
+				{
+					this.$.playButton.icon = "av:pause";
+				}
+				else
+				{
+					this.$.playButton.icon = "av:play-arrow";	
+				}
+			},
+			playingChanged:function(newValue,oldValue)
+			{
+				if(newValue)
+				{
+					this.$.playButton.icon = "av:pause";
+				}
+				else
+				{
+					this.$.playButton.icon = "av:play-arrow";	
+				}
 			}
 		});
 	</script>
