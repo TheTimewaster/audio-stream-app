@@ -20,7 +20,7 @@
 			is: 'album-view',
 			albumClicked:function(e)
 			{
-				this.$$("#albumDetail").openAlbum(e.detail.obj.id);
+				this.$$("#albumDetail").openAlbum(e.detail.obj);
 				this.$$("#albumView").selected = 1;
 				this.fire(e.name);
 			},

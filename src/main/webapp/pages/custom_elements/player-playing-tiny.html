@@ -39,8 +39,8 @@
 
 			</div>
 			<paper-item-body two-line id="playerTinyInfo">
-				<span>The Czar - I. Usurper II. Escape III. Martyr IV. Spiral</span>
-				<span secondary>My name is not Jon Doe</span>
+				<span>{{currentlyPlaying.name}}</span>
+				<span secondary>{{currentlyPlaying.artist}}</span>
 			</paper-item-body>
 			<paper-icon-button id="playButton" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
 		</paper-item>

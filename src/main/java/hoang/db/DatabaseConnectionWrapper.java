@@ -19,10 +19,10 @@ public class DatabaseConnectionWrapper
 		
 		return INSTANCE;
 	}
-	
-	public MongoDatabaseConnection getMongoDatabaseConnection(String _host, int port, String _database)
+
+	public SQLDatabaseConnection getSQLDatabaseConnection() throws DBConnectionException
 	{
-		return new MongoDatabaseConnection(_host, port, _database);
+		return new SQLDatabaseConnection();
 	}
 
 }

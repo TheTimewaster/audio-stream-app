@@ -1,11 +1,38 @@
 <dom-module id="artist-list">
 	<style>
 		:host {
-			display: block;
+			width: 100%;
+			display: flex;
+			display: -webkit-flex;
+			padding-bottom: 40px;
+		}
+		paper-material.artistCard
+		{		
+			min-height:200px;
+			width:200px;
+			margin:16px;
+			cursor:pointer;
+			border-radius: 2px;
+			display: flex;
+    		justify-content: center;
+    		align-items: center;
+		}
+		.artistName
+		{
+			color:white;
+			text-align: center;
+    		margin: 10px;
+    		font-size: 28px;
+    		text-transform: capitalize;
 		}
 	</style>
 	<template>
-		
+		<iron-ajax on-request="requestingAlbums" on-response="responsingAlbums" id="albumsAjax" auto url="/api/metadata/artists" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<template is="dom-repeat" items="{{data}}" as="artist" id="artistList">
+			<paper-material elevation="1" class="artistCard" style$="{{artist.color}}">
+				<span class="artistName">{{artist.artist}}</span>
+			</paper-material>
+		</template>
 	</template>
 	<script>
 		Polymer({

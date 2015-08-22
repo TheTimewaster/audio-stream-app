@@ -1,7 +1,8 @@
 package hoang.server;
 
+import hoang.db.DBConnectionException;
 import hoang.db.DatabaseConnectionWrapper;
-import hoang.db.MongoDatabaseConnection;
+import hoang.db.SQLDatabaseConnection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,34 +24,33 @@ public class MetadataServlet
 	HttpServletResponse response;
 	
 	@GET
-	@Path("/getDocument")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDocument()
-	{
-		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance().getMongoDatabaseConnection("localhost", 27017, "music");
-		
-		String json = conn.getAllDocumentsInCollection();
-		
-		return Response.ok(json).type("application/json").build();
-	}
-	
-	@GET
 	@Path("/albums/{albid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAlbum(@PathParam("albid") String _albumID)
-	{
-		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance().getMongoDatabaseConnection("localhost", 27017, "music");
+	{		
+		SQLDatabaseConnection conn;
 		
 		String json = null;
 		
-		if(_albumID == null)
-		{
-			json = conn.getAllAlbumsFromCollection();
-		}
-		else
-		{
-			json = conn.getAlbumFromCollection(_albumID);
-		}
+		try
+        {
+	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+	        
+	        if(_albumID == null)
+			{
+				json = conn.getAlbums().toString();
+			}
+			else
+			{
+				System.out.println(_albumID);
+				json = conn.getAlbum(Integer.valueOf(_albumID)).toString();
+			}
+        } 
+		catch (DBConnectionException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
 		
 		return Response.ok(json).type("application/json").build();
 	}
@@ -60,11 +60,41 @@ public class MetadataServlet
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllAlbum()
 	{
-		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance().getMongoDatabaseConnection("localhost", 27017, "music");
+		SQLDatabaseConnection conn = null;
 		
 		String json = null;
+        try
+        {
+	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+	        
+	        json = conn.getAlbums().toString();
+        }
+        catch (DBConnectionException e)
+        {
+	        return Response.serverError().build();
+        }
 		
-		json = conn.getAllAlbumsFromCollection();
+		return Response.ok(json).type("application/json").build();
+	}
+	
+	@GET
+	@Path("/artists")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getAllArtist()
+	{
+		SQLDatabaseConnection conn = null;
+		
+		String json = null;
+        try
+        {
+	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+	        
+	        json = conn.getArtists().toString();
+        }
+        catch (DBConnectionException e)
+        {
+	        return Response.serverError().build();
+        }
 		
 		return Response.ok(json).type("application/json").build();
 	}

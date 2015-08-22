@@ -26,10 +26,10 @@
 	<template>
 		<neon-animated-pages id="playerModeSelector" selected="0">
 			<player-playing-small id="playerSmall" playback-progress="{{playBackProgress}}" currently-playing="[[currentlyPlaying]]"></player-playing-small>
-			<player-playing-tiny id="playerTiny" on-change-to-small="changePlayerMode(small)"></player-playing-tiny>
+			<player-playing-tiny id="playerTiny" on-change-to-small="changePlayerMode(small)" currently-playing="[[currentlyPlaying]]"></player-playing-tiny>
 		</neon-animated-pages>
 		<audio id="audioElement">
-			<source id="sourceElement" src="{{loadStream(currentlyPlaying.file)}}" type="audio/mpeg" codecs="mp3"/>
+			<source id="sourceElement" src="{{loadStream(currentlyPlaying.trackID)}}" type="audio/mpeg" codecs="mp3"/>
 		</audio>
 	</template>
 	<script>
@@ -74,10 +74,10 @@
 				//track ended event
 				audioElement.onpause = this.playBackEnded;
 			},
-			loadStream:function(objectID)
+			loadStream:function(trackID)
 			{
-				if (objectID != null) {
-					return "/api/stream/" + objectID;
+				if (trackID != null) {
+					return "/api/stream/" + trackID;
 				};
 			},
 			changePlayerMode:function(mode)

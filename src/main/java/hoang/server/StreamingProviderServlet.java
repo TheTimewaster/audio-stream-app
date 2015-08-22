@@ -1,8 +1,10 @@
 package hoang.server;
 
 
+import hoang.data.TrackObject;
+import hoang.db.DBConnectionException;
 import hoang.db.DatabaseConnectionWrapper;
-import hoang.db.MongoDatabaseConnection;
+import hoang.db.SQLDatabaseConnection;
 import hoang.server.stream.AbstractStreamingOutput;
 import hoang.server.stream.DefaultStreamingOutput;
 import hoang.server.stream.MediaStreamingOutput;
@@ -30,56 +32,63 @@ public class StreamingProviderServlet
 	HttpServletResponse	     response;
 	
 	@GET
-	@Path("/{obj_id}")
+	@Path("/{trackID}")
 	@Produces("audio/mpeg")
-	public Response getStream(@PathParam(value = "obj_id") String _objID, 
+	public Response getStream(@PathParam(value = "trackID") String _trackID, 
 			@HeaderParam(value = "Range") String _range)
 	{
-		MongoDatabaseConnection conn = DatabaseConnectionWrapper.getInstance()
-		        .getMongoDatabaseConnection(
-		                MongoDatabaseConnection.DEFAULT_MONGO_HOST,
-		                MongoDatabaseConnection.DEFAULT_MONGO_PORT,
-		                MongoDatabaseConnection.DEFAULT_DATABASE);
 		
-		int contentLength = conn.getContentLength(_objID);
-		
+		int contentLength = 0;
 		AbstractStreamingOutput streamer = null;
+		TrackObject track = null;
+		SQLDatabaseConnection conn;
 		
-		if(_range == null)
-		{
-			streamer = new DefaultStreamingOutput(conn.getFileFromMongoDB(_objID));
-			
-			return Response.ok(streamer).header(HttpHeaders.CONTENT_LENGTH, contentLength).build();
-		}
-		else
-		{
-			//split down range request
-			String[] ranges = _range.split("=")[1].split("-");
-			final int from = Integer.parseInt(ranges[0]);
-			
-			//chunk down media if the range header upper bound is undefined, e.g. Chrome
-			int to = chunkSize + from;
-			if(to >= contentLength)
+        try
+        {
+	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+	        track = conn.getTrack(Integer.valueOf(_trackID));
+	        contentLength = track.getLength();
+	        
+	        if(_range == null)
 			{
-				to = (int) (contentLength -1);
+				streamer = new DefaultStreamingOutput(track.getIn());
+				
+				return Response.ok(streamer).header(HttpHeaders.CONTENT_LENGTH, contentLength).build();
 			}
-			
-			if(ranges.length == 2)
+			else
 			{
-				to = Integer.parseInt(ranges[1]);
+				//split down range request
+				String[] ranges = _range.split("=")[1].split("-");
+				final int from = Integer.parseInt(ranges[0]);
+				
+				//chunk down media if the range header upper bound is undefined, e.g. Chrome
+				int to = chunkSize + from;
+				if(to >= contentLength)
+				{
+					to = (int) (contentLength -1);
+				}
+				
+				if(ranges.length == 2)
+				{
+					to = Integer.parseInt(ranges[1]);
+				}
+				
+				final String responseRange = String.format("bytes %d-%d/%d", from, to, contentLength);
+				final int len = to - from +1;
+				streamer = new MediaStreamingOutput(len, from, track.getIn());
+				
+				return Response.ok(streamer)
+						.status(206)
+						.header("Accept-Ranges", "bytes")
+						.header("Content-Range", responseRange)
+						.header(HttpHeaders.CONTENT_LENGTH, len)
+						.build();
 			}
-			
-			final String responseRange = String.format("bytes %d-%d/%d", from, to, contentLength);
-			final int len = to - from +1;
-			streamer = new MediaStreamingOutput(len, from, conn.getFileFromMongoDB(_objID));
-			
-			return Response.ok(streamer)
-					.status(206)
-					.header("Accept-Ranges", "bytes")
-					.header("Content-Range", responseRange)
-					.header(HttpHeaders.CONTENT_LENGTH, len)
-					.build();
-		}
+        } 
+        catch (DBConnectionException e)
+        {
+        	return Response.serverError().build();
+        }
 	}
 
 }

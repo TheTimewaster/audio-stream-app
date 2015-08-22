@@ -60,9 +60,11 @@
 		}
 		#albumCover
 		{
-			background-color: var(--paper-blue-500);
+			background-color: var(--paper-grey-500);
 			width: 240px;
 			height:240px;
+			display: flex;
+			align-items:center;
 		}
 		#albumTitle
 		{
@@ -94,7 +96,7 @@
 		<paper-material id="albumCard" elevation="1" animated>
 			<div id="albumHeader">
 				<div id="albumCover">
-					
+					<img src="{{album.coverImg}}" width="240">
 				</div>
 				<div id="albumTitle">
 					<h1>{{album.album}}</h1>
@@ -115,7 +117,7 @@
 				</template>	
 			</div>
 		</paper-material>
-		<iron-ajax id="albumAjax" handle-as="json" last-response="{{album}}"></iron-ajax>
+		<iron-ajax id="albumAjax" handle-as="json" last-response="{{album.tracks}}"></iron-ajax>
 	</template>
 	<script>
 		Polymer({
@@ -225,9 +227,10 @@
 
 				this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
 			},
-			openAlbum:function(albID)
+			openAlbum:function(album)
 			{
-				this.$$("#albumAjax").url = "/api/metadata/albums/" + albID;
+				this.album = album;
+				this.$$("#albumAjax").url = "/api/metadata/albums/" + album.id;
 				this.$$("#albumAjax").generateRequest();
 			}
 		});
