@@ -1,0 +1,131 @@
+<link rel="import" href="album-detail.html">
+<dom-module id="artist-detail">
+	<style>
+		:host {
+			display: block;
+		}
+		#artistCard
+		{
+			margin-left:auto;
+			margin-right:auto;
+			margin-top:16px;
+			margin-bottom:16px;
+			border-radius: 2px;
+			display: block;
+			padding-bottom: 48px;
+			background-color:var(--paper-grey-50);
+			width:90%;
+		}
+		#artistHeader
+		{
+			display: inline-flex;
+			display: -webkit-inline-flex;
+			width:100%;
+			border-bottom:1px solid var(--paper-grey-300);
+		}
+		#artistHero
+		{
+			width: 100%;
+			height:240px;
+			display: flex;
+			align-items:flex-end;
+		}
+		#artistPlay
+		{
+			position:absolute;
+			top:213px;
+			right:16px;
+		}
+		#artistHeroText
+		{
+			font-size: 64px;
+			color: black;
+			margin-left: 16px;
+			margin-bottom: 8px;
+		}
+		#artistInfo
+		{
+			margin-top: 32px;
+		}	
+		#artistDescrip
+		{
+			margin: 16px;
+		}
+		#artistSummary
+		{
+			text-align: center;
+		}
+		#artistSummary span
+		{
+			margin: 32px
+		}
+	</style>
+	<template>
+		<paper-material id="artistCard" elevation="1" animated>
+			<div id="artistHeader" >
+				<div id="artistHero">
+					<span id="artistHeroText">{{artist.artist}}</span>
+				</div>
+				<paper-fab id="artistPlay" on-click="artistPlayClicked" icon="av:play-arrow"></paper-fab>
+			</div>
+			<div id="artistInfo">
+				<div id="artistDescrip">
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+				</div>
+				<div id="artistSummary">
+					<span>Albums: 5</span>
+					<span>Tracks: 5</span>
+				</div>
+			</div>
+		</paper-material>
+		<template is="dom-repeat" items="{{artist.albums}}" as="album" id="artistAlbumList">
+			<album-detail album="{{album}}"></album-detail>
+		</template>
+		<iron-ajax id="artistAjax" handle-as="json" on-response="responseReceived"></iron-ajax>
+	</template>
+	<script>
+		Polymer({
+			is: 'artist-detail',
+			properties:
+			{
+				artist:
+				{
+					type:Object
+				}
+			},
+			_getFirstLetter:function (artistName) 
+			{
+				return artistName.charAt(0);
+			},
+			openArtist:function(arg)
+			{
+				this.artist = arg
+				this.$$("#artistAjax").url = "/api/metadata/artists/" + arg.artistID;
+				this.$$("#artistAjax").generateRequest();
+			},
+			responseReceived:function(event)
+			{
+				this.artist = this.$.artistAjax.lastResponse;
+			},
+			artistPlayClicked:function()
+			{
+				var newPlayListObject = {tracks:[], startIndex:0};
+
+				for (var i = 0; i < this.artist.albums.length; i++) {
+					var album = this.artist.albums[i]
+					for (var j = 0; j < album.tracks.length; j++) {
+						var track = album.tracks[j]
+
+						var newTrackObject = track;
+						newTrackObject.album = album.album;
+						newTrackObject.artist = this.artist.artist;
+						newTrackObject.cover = album.coverImg;
+
+						newPlayListObject.tracks.push(newTrackObject);
+					}
+				}
+				this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
+			}
+		});
+	</script>
+</dom-module>
