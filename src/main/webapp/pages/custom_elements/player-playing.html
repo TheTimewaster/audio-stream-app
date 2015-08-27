@@ -57,7 +57,8 @@
 				'playerSmall.sliderSeeked':'playerSliderSeeked',
 				'playerSmall.previousClicked':'playerPreviousClicked',
 				'playerSmall.nextClicked':'playerNextClicked',
-				'playerTiny.playClicked':'playerPlayClicked'
+				'playerTiny.playClicked':'playerPlayClicked',
+				'playerTiny.changeToSmall':'changeToSmall'
 			},
 			ready:function()
 			{
@@ -85,6 +86,7 @@
 				if(mode == "small")
 				{
 					this.$.playerModeSelector.selected = 0;
+					this.fire("changeToSmall");
 				}
 				else
 				{
@@ -146,6 +148,11 @@
 				this.$.playerTiny.playing = false;
 				this.playBackProgress = 0;
 				this.$.audioElement.load();
+			},
+			changeToSmall:function(event)
+			{
+				this.changePlayerMode("small");
+
 			}
 		});
 	</script>

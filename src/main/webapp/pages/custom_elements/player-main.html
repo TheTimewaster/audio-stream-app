@@ -44,7 +44,7 @@
 		}
 	</style>
 	<template>
-			<paper-icon-button id="toggleShowPlayList" icon="list" on-click="showPlayList"></paper-icon-button>
+			<paper-icon-button id="toggleShowPlayList" icon="list"></paper-icon-button>
 			<div id="playerVertFlex">
 				<player-list id="playListContainer" play-list="[[toPlayTracks]]"></player-list>
 				<player-playing id="playingContainer"></player-playing>
@@ -77,7 +77,10 @@
 			{
 				'playingContainer.trackEnded':'playNextTrack',
 				'playingContainer.playerPreviousClicked':'playPreviousTrack',
-				'playingContainer.playerNextClicked':'playNextTrack'
+				'playingContainer.playerNextClicked':'playNextTrack',
+				'playingContainer.changeToSmall':'changeToSmall',
+				'toggleShowPlayList.click':'changeToTiny',
+				'playListContainer.playingTrackUpdate':'playTrackFromPlayList'
 			},
 			ready:function()
 			{
@@ -96,9 +99,7 @@
 			},
 		   	showPlayList:function()
 		   	{
-		   		//this.$$("#playingContainer").show();
 		   		this.$.playListContainer.changeVisible();
-		   		this.$.playingContainer.changePlayerMode("tiny");
 		   	},
 		   	updatePlayList:function(e, detail, sender)
 		   	{
@@ -141,6 +142,23 @@
 		   		{
 		   			this.$.playingContainer.startNewPlayBack();
 		   		}
+		   	},
+		   	playTrackFromPlayList:function(event)
+		   	{
+		   		this.currentIndex = event.detail.index;
+		   		this.$.playingContainer.currentlyPlaying = this.toPlayTracks.tracks[this.currentIndex]
+		   		this.$.playingContainer.startNewPlayBack();
+		   	},
+		   	changeToSmall:function(event)
+		   	{
+		   		// this.$.playingContainer.changePlayerMode("small");
+		   		this.showPlayList();
+		   		this.$.playListContainer.changeVisible(false);
+		   	},
+		   	changeToTiny:function(event)
+		   	{
+		   		this.$.playingContainer.changePlayerMode("tiny");
+		   		this.$.playListContainer.changeVisible(true);
 		   	}
 		});
 	</script>

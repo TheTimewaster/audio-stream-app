@@ -34,9 +34,9 @@
 	</style>
 	<template>
 		<!--3rd appeareance of the player. Contains only the cover, track name, artist name and play/pause button-->
-		<paper-item id="playerTinyContainer" on-click="changeToSmall">
-			<div id="playerTinyCover">
-
+		<paper-item id="playerTinyContainer">
+			<div id="playerTinyCover" on-click="changeToSmall">
+			<img src="{{currentlyPlaying.cover}}" width="60">
 			</div>
 			<paper-item-body two-line id="playerTinyInfo">
 				<span>{{currentlyPlaying.name}}</span>
@@ -62,7 +62,7 @@
 					observer:"playingChanged"
 				}
 			},
-			changeToSmall:function () 
+			changeToSmall:function() 
 			{
 				this.fire("changeToSmall");
 			},

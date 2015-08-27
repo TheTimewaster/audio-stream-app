@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
 <link rel="import" href="artist-list.html">
+<link rel="import" href="artist-detail.html">
 <dom-module id="artist-view">
 	<style>
 		:host {
@@ -9,12 +10,23 @@
 	</style>
 	<template>
 		<neon-animated-pages selected="0" id="artistView">
-			<artist-list id="artist-list"></artist-list>
+			<artist-list id="artistList" on-artist-clicked="artistClicked"></artist-list>
+			<artist-detail id="artistDetail" ></artist-detail>
 		</neon-animated-pages>
 	</template>
 	<script>
 		Polymer({
-			is: 'artist-view'
+			is: 'artist-view',
+			artistClicked:function (event) 
+			{
+				this.$.artistDetail.openArtist(event.detail.obj);
+				this.$$("#artistView").selected = 1;
+			},
+			resetView:function()
+			{
+				this.$$("#artistView").selected = 0;
+				this.$$("#artistList").refresh();
+			}
 		});
 	</script>
 </dom-module>

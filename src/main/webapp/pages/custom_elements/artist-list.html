@@ -10,7 +10,7 @@
 		{		
 			min-height:200px;
 			width:200px;
-			margin:16px;
+			margin-bottom:16px;
 			cursor:pointer;
 			border-radius: 2px;
 			display: flex;
@@ -19,24 +19,53 @@
 		}
 		.artistName
 		{
-			color:white;
 			text-align: center;
-    		margin: 10px;
-    		font-size: 28px;
-    		text-transform: capitalize;
+			width: 100%;
+    		@apply(--paper-font-subhead);
+		}
+		.innerName
+		{
+			text-transform: capitalize;
+			font-size: 64px;
+			color:white;
+		}
+		.artistListEntry
+		{
+			margin: 16px;
+		}
+		.artistName:hover
+		{
+			text-decoration: underline;
 		}
 	</style>
 	<template>
-		<iron-ajax on-request="requestingAlbums" on-response="responsingAlbums" id="albumsAjax" auto url="/api/metadata/artists" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax id="artistAjax" auto url="/api/metadata/artists" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="artist" id="artistList">
-			<paper-material elevation="1" class="artistCard" style$="{{artist.color}}">
-				<span class="artistName">{{artist.artist}}</span>
-			</paper-material>
+			<div class="artistListEntry">
+				<paper-material elevation="1" class="artistCard" style$="{{artist.color}}" on-click="artistClicked">
+					<span class="innerName">{{_getFirstLetter(artist.artist)}}</span>
+					</paper-material>
+				<div class="artistName" on-click="artistClicked">
+					<span>[[artist.artist]]</span>
+				</div>
+			</div>
 		</template>
 	</template>
 	<script>
 		Polymer({
-			is: 'artist-list'
+			is: 'artist-list',
+			_getFirstLetter:function (artistName) 
+			{
+				return artistName.charAt(0);
+			},
+			artistClicked:function(event)
+			{
+				this.fire("artist-clicked", {obj:event.model.artist});
+			},
+			refresh:function()
+			{
+				this.$.artistAjax.generateRequest();
+			}
 		});
 	</script>
 </dom-module>

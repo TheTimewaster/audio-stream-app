@@ -8,9 +8,13 @@
 		}
 		#playingAlbumCover
 		{
-			background-color: var(--paper-grey-500);
+			background-color: var(--paper-grey-50);
 			width:100%;
-			height:360px;
+			max-height: 100%
+		}
+		#playingAlbumCover img
+		{
+			width: 100%;
 		}
 		#playerTrackContainer
 		{
@@ -63,7 +67,7 @@
 	</style>
 	<template>
 		<div id="playingAlbumCover">
-			
+			<img src="{{currentlyPlaying.cover}}">
 		</div>
 		
 		<div id="playerTrackContainer">

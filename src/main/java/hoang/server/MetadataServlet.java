@@ -98,5 +98,27 @@ public class MetadataServlet
 		
 		return Response.ok(json).type("application/json").build();
 	}
+	
+	@GET
+	@Path("/artists/{artistID}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getArtist(@PathParam("artistID") String _artistID)
+	{
+		SQLDatabaseConnection conn = null;
+		
+		String json = null;
+        try
+        {
+	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+	        
+	        json = conn.getArtist(Integer.valueOf(_artistID)).toString();
+        }
+        catch (DBConnectionException e)
+        {
+	        return Response.serverError().build();
+        }
+		
+		return Response.ok(json).type("application/json").build();
+	}
 
 }

@@ -166,7 +166,14 @@
 			},
 			tabClicked:function(e)
 			{	
-				this.$$("#albumView").resetView();
+				if(this.$$("#pageTabs").selected == 0)
+				{
+					this.$$("#artistView").resetView();
+				}
+				if(this.$$("#pageTabs").selected == 1)
+				{
+					this.$$("#albumView").resetView();
+				}
 				this.selected = this.$$("#pageTabs").selected;
 				this._returnToRoot();
 			},
@@ -184,6 +191,10 @@
 					if(this.selected == 1)
 					{
 						this.$$("#albumView").resetView();
+					}
+					if(this.selected == 0)
+					{
+						this.$$("#artistView").resetView();
 					}
 					this._returnToRoot();
 				}

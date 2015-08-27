@@ -13,8 +13,8 @@
 		{
 			margin-left:auto;
 			margin-right:auto;
-			margin-top:16px;
-			margin-bottom:16px;
+			margin-top:32px;
+			margin-bottom:32px;
 			border-radius: 2px;
 			display: block;
 			padding-bottom: 16px;
@@ -117,7 +117,7 @@
 				</template>	
 			</div>
 		</paper-material>
-		<iron-ajax id="albumAjax" handle-as="json" last-response="{{album.tracks}}"></iron-ajax>
+		<iron-ajax id="albumAjax" handle-as="json" last-response="{{album}}"></iron-ajax>
 	</template>
 	<script>
 		Polymer({
@@ -192,8 +192,6 @@
 		    },
 			_trackFromAlbumPlayClicked: function(e)
 			{
-				if(!(typeof e.model.track.file === 'undefined'))
-				{
 					var newPlayListObject = {tracks:[], startIndex:0};
 
 					for (var i = 0; i < this.album.tracks.length; i++) 
@@ -201,6 +199,7 @@
 						var newTrackObject = this.album.tracks[i];
 						newTrackObject.album = this.album.album;
 						newTrackObject.artist = this.album.artist;
+						newTrackObject.cover = this.album.coverImg;
 
 						newPlayListObject.tracks.push(newTrackObject);
 
@@ -211,7 +210,6 @@
 					};
 
 					this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
-				}
 			},
 			_albumPlayClicked:function()
 			{
@@ -221,6 +219,7 @@
 					var newTrackObject = this.album.tracks[i];
 					newTrackObject.album = this.album.album;
 					newTrackObject.artist = this.album.artist;
+					newTrackObject.cover = this.album.coverImg;
 
 					newPlayListObject.tracks.push(newTrackObject);
 				};
@@ -229,7 +228,7 @@
 			},
 			openAlbum:function(album)
 			{
-				this.album = album;
+				// this.album = album;
 				this.$$("#albumAjax").url = "/api/metadata/albums/" + album.id;
 				this.$$("#albumAjax").generateRequest();
 			}

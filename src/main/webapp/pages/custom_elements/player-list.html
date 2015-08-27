@@ -57,8 +57,10 @@
 		</paper-toolbar>
 		<div class="content">
 			<template is="dom-repeat" items="{{playList.tracks}}" as="track">
-				<paper-item class="playListRow">
-					<div class="cover"></div>
+				<paper-item class="playListRow" on-click="playerListTrackClicked">
+					<div class="cover">
+						<img src="{{track.cover}}" width="48">
+					</div>
 					<paper-item-body two-line>
 						<span>{{track.name}}</span>
 						<span secondary>{{concatAlbumAndArtistString(track.artist,track.album)}}</span>
@@ -86,12 +88,13 @@
 				},
 				visible:
 				{
-					type:Boolean
+					type:Boolean,
+					value:false
 				}
 			},
 			ready:function()
 			{
-				this.visible = true;
+				this.visible = false;
 			},
 			playListChanged:function(newValue, oldValue)
 			{
@@ -100,8 +103,9 @@
 					this.playingTrack = newValue.tracks[newValue.startIndex];
 				}
 			},
-			changeVisible:function()
+			changeVisible:function(visibility)
 			{
+				this.visible = visibility
 				if(this.visible)
 				{
 					this.style.display = "block";
@@ -111,8 +115,9 @@
 					this.style.display = "none";
 				}
 
-				this.visible = !this.visible;
-				return this.visible;
+				// this.visible = !this.visible;
+
+				// return this.visible;
 			},
 			concatAlbumAndArtistString:function(artist, album)
 			{
@@ -132,6 +137,10 @@
 			isCurrentPlayingTrack:function(track)
 			{
 				return (this.playingTrack == track);
+			},
+			playerListTrackClicked:function(event)
+			{
+				this.fire("playingTrackUpdate", {index:event.model.index});
 			}
 		});
 	</script>
