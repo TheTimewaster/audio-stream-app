@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 import javax.ws.rs.WebApplicationException;
 
-public class MediaStreamingOutput implements AbstractStreamingOutput 
+public class MediaStreamingOutput implements IStreamingOutput 
 {
 	private int contentLength;
 	

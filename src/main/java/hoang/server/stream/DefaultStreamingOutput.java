@@ -8,7 +8,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.io.IOUtils;
 
-public class DefaultStreamingOutput implements AbstractStreamingOutput
+public class DefaultStreamingOutput implements IStreamingOutput
 {		
 	private InputStream in;
 	

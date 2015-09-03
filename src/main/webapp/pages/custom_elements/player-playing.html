@@ -28,7 +28,7 @@
 			<player-playing-small id="playerSmall" playback-progress="{{playBackProgress}}" currently-playing="[[currentlyPlaying]]"></player-playing-small>
 			<player-playing-tiny id="playerTiny" on-change-to-small="changePlayerMode(small)" currently-playing="[[currentlyPlaying]]"></player-playing-tiny>
 		</neon-animated-pages>
-		<audio id="audioElement">
+		<audio id="audioElement" preload="auto">
 			<source id="sourceElement" src="{{loadStream(currentlyPlaying.trackID)}}" type="audio/mpeg" codecs="mp3"/>
 		</audio>
 	</template>
@@ -79,7 +79,11 @@
 			{
 				if (trackID != null) {
 					return "/api/stream/" + trackID;
-				};
+				}
+				else
+				{
+					return "/api/stream/" + 13;
+				}
 			},
 			changePlayerMode:function(mode)
 			{

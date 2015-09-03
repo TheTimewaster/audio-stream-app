@@ -34,12 +34,14 @@ public class SQLDatabaseConnection
 			conn = DriverManager.getConnection(
 			        "jdbc:mariadb://localhost:3306/music_db", "root", "");
 
-		} catch (ClassNotFoundException e)
+		} 
+		catch (ClassNotFoundException e)
 		{
-			throw new DBConnectionException();
-		} catch (SQLException e)
+			throw new DBConnectionException(e.getMessage());
+		} 
+		catch (SQLException e)
 		{
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 	}
 
@@ -105,7 +107,7 @@ public class SQLDatabaseConnection
 
 			}
 
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 
 		return albumArray;
@@ -173,7 +175,7 @@ public class SQLDatabaseConnection
 
 			}
 
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 
 		return albumObj;
@@ -215,7 +217,7 @@ public class SQLDatabaseConnection
 
 			}
 
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 
 		return artistArray;
@@ -242,7 +244,7 @@ public class SQLDatabaseConnection
 			}
 		} catch (SQLException e)
 		{
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 
 		return track;
@@ -314,8 +316,7 @@ public class SQLDatabaseConnection
 			artistObj.put("albums", albumsArray);
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
-			throw new DBConnectionException();
+			throw new DBConnectionException(e.getMessage());
 		}
 
 		return artistObj;

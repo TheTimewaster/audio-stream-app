@@ -5,7 +5,7 @@ import hoang.data.TrackObject;
 import hoang.db.DBConnectionException;
 import hoang.db.DatabaseConnectionWrapper;
 import hoang.db.SQLDatabaseConnection;
-import hoang.server.stream.AbstractStreamingOutput;
+import hoang.server.stream.IStreamingOutput;
 import hoang.server.stream.DefaultStreamingOutput;
 import hoang.server.stream.MediaStreamingOutput;
 
@@ -35,11 +35,11 @@ public class StreamingProviderServlet
 	@Path("/{trackID}")
 	@Produces("audio/mpeg")
 	public Response getStream(@PathParam(value = "trackID") String _trackID, 
-			@HeaderParam(value = "Range") String _range)
+			@HeaderParam(value = "Range") String _range, @HeaderParam(value = "User-Agent") String _userAgent)
 	{
 		
 		int contentLength = 0;
-		AbstractStreamingOutput streamer = null;
+		IStreamingOutput streamer = null;
 		TrackObject track = null;
 		SQLDatabaseConnection conn;
 		
@@ -49,7 +49,8 @@ public class StreamingProviderServlet
 	        track = conn.getTrack(Integer.valueOf(_trackID));
 	        contentLength = track.getLength();
 	        
-	        if(_range == null)
+	        //if User-Agent contains Gecko -> fallback with no 206 response
+	        if(_range == null || _userAgent.contains("Firefox"))
 			{
 				streamer = new DefaultStreamingOutput(track.getIn());
 				
