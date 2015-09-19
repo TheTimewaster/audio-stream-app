@@ -153,7 +153,7 @@
 		            	name:"fade-in-animation",
 		            	node:this.$.albumTracks,
 		            	timing:{
-		            		delay:600
+		            		delay:300
 		            	}
 		            },
 		            {
@@ -167,7 +167,7 @@
 		            	name:"scale-up-animation",
 		            	node:this.$.albumPlay,
 		            	timing:{
-		            		delay:800
+		            		delay:500
 		            	}
 		            }],
 		            'exit': [{
@@ -226,7 +226,7 @@
 
 				this.fire("iron-signal",{name:"playlist-update",data:newPlayListObject});
 			},
-			openAlbum:function(album)
+			openDetail:function(album)
 			{
 				// this.album = album;
 				this.$$("#albumAjax").url = "/api/metadata/albums/" + album.id;

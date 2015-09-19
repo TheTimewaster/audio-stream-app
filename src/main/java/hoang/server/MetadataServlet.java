@@ -29,29 +29,31 @@ public class MetadataServlet
 	public Response getAlbum(@PathParam("albid") String _albumID)
 	{		
 		SQLDatabaseConnection conn;
-		
 		String json = null;
 		
 		try
         {
-	        conn = DatabaseConnectionWrapper.getInstance().getSQLDatabaseConnection();
+			// get database connection
+	        conn = DatabaseConnectionWrapper.getInstance()
+	        		.getSQLDatabaseConnection();
 	        
 	        if(_albumID == null)
 			{
+	        	// get all albums, if an _albumID was not requested
 				json = conn.getAlbums().toString();
 			}
 			else
 			{
-				System.out.println(_albumID);
+	        	// get album with specifed _albumID
 				json = conn.getAlbum(Integer.valueOf(_albumID)).toString();
 			}
         } 
 		catch (DBConnectionException e)
         {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
+			//return HTTP 500 when there is something wrong with the database
+	        return Response.serverError().entity(e.getMessage()).build();
         }
-		
+		//return HTTP 200 JSON String which is saved in variable “json”
 		return Response.ok(json).type("application/json").build();
 	}
 	

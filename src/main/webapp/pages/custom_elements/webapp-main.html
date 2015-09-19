@@ -118,18 +118,16 @@
 			<div id="mainContainer">
 				<paper-scroll-header-panel fixed main>
 					<paper-toolbar class="medium-tall">
-						<paper-icon-button id="navigationIcon" disabled icon="av:play-arrow" on-click="getBack"></paper-icon-button>
-					  <span class="title">{{title}}</span>
+					  <span class="title">Polymer Audio Stream App</span>
 					  <paper-tabs id="pageTabs" selected="{{selected}}" class="bottom self-end" on-click="tabClicked">
 				  		<paper-tab>ARTISTS</paper-tab>
 				  		<paper-tab>ALBUMS</paper-tab>
-				  		<paper-tab>TRACKS</paper-tab>
 					  </paper-tabs>
 					</paper-toolbar>
 					
 					<neon-animated-pages id="pageContainer" selected="{{selected}}">
 						<artist-view id="artistView"></artist-view>
-						<album-view id="albumView" on-album-clicked="albumClicked"></album-view>
+						<album-view id="albumView"></album-view>
 						<div class="noContentInfo">
 							<h1>No tracks to show</h1>
 						</div>
@@ -150,14 +148,6 @@
 				{
 					value:"1"
 				},
-				title:
-				{
-					value:"My Application",
-					defaultValue:function(){
-						return "My Application";
-					}
-
-				},
 				isViewRoot:
 				{
 					type:Boolean,
@@ -175,36 +165,6 @@
 					this.$$("#albumView").resetView();
 				}
 				this.selected = this.$$("#pageTabs").selected;
-				this._returnToRoot();
-			},
-			albumClicked:function(e)
-			{
-				this.title = e.detail.obj.album;
-				this.$.navigationIcon.icon="arrow-back";
-				this.$.navigationIcon.disabled = false;
-				this.isViewRoot = false;
-			},
-			getBack:function(e)
-			{
-				if(!this.isViewRoot)
-				{
-					if(this.selected == 1)
-					{
-						this.$$("#albumView").resetView();
-					}
-					if(this.selected == 0)
-					{
-						this.$$("#artistView").resetView();
-					}
-					this._returnToRoot();
-				}
-			},
-			_returnToRoot:function()
-			{
-				this.isViewRoot == true;
-				this.$.navigationIcon.icon="av:play-arrow";
-				this.title = "My Application"
-				this.$.navigationIcon.disabled = true;
 			}
 		});
 	</script>

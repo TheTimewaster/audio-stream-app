@@ -1,0 +1,16 @@
+<script type="text/javascript">
+	ViewBehavior = 
+	{
+		entryClicked:function(e)
+		{
+			this.$$("#detail").openDetail(e.detail.obj);
+			this.$$("#view").selected = 1;
+			this.fire(e.name);
+		},
+		resetView:function()
+		{
+			this.$$("#view").selected = 0;
+			this.$$("#list").refresh();
+		}
+	}
+</script>

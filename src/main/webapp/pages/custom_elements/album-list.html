@@ -58,7 +58,7 @@
 		}
 	</style>
 	<template>
-		<iron-ajax on-request="requestingAlbums" on-response="responsingAlbums" id="albumsAjax" auto url="/api/metadata/albums" handle-as="json" last-response="{{data}}"></iron-ajax>
+		<iron-ajax id="albumsAjax" auto url="/api/metadata/albums" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="album"  id="albumList">
 			<paper-material elevation="1" class="albumSmall" on-click="albumClicked">
 				<div class="albumThumbnail">
@@ -90,16 +90,15 @@
 							node:this
 						}],
 			            'exit': [
-						{
-							name: 'hero-animation',
-			  				id: 'heroCover',
-							fromPage: this,
-							timing:{
-								delay:200
-							}
-			            }
-						]
-			         }
+							{
+								name: 'hero-animation',
+				  				id: 'heroCover',
+								fromPage: this,
+								timing:{
+									delay:200
+								}
+				         }
+						]}
 			      }
 		      }
 		    
@@ -125,17 +124,6 @@
 		   };
 
 			this.fire("album-clicked", {album:target,obj:event.model.album});
-		},
-		requestingAlbums:function()
-		{
-			// if(this.$$("#ajax").loading)
-			// {
-			// 	this.$$("#loadingOverlay").style.display = "block";
-			// }
-		},
-		responsingAlbums:function()
-		{
-			// this.$$("#loadingOverlay").style.display = "none";
 		},
 		refresh:function()
 		{

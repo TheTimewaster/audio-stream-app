@@ -30,9 +30,10 @@ public class SQLDatabaseConnection
 	{
 		try
 		{
+			//root:5udI2EWa - system_music_db:xod31Alo
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection(
-			        "jdbc:mariadb://localhost:3306/music_db", "root", "");
+			        "jdbc:mariadb://localhost:3306/music_db", "system_music_db", "xod31Alo");
 
 		} 
 		catch (ClassNotFoundException e)
