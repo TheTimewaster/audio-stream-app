@@ -67,23 +67,22 @@
 	</style>
 	<template>
 		<div id="playingAlbumCover">
-			<img src="{{currentlyPlaying.cover}}">
+			<img src="{{_albumCoverProvided(currentlyPlaying.cover)}}">
 		</div>
-		
 		<div id="playerTrackContainer">
 			<span class="playerPlayingHeader">{{currentlyPlaying.name}}</span>
 			<p>{{currentlyPlaying.artist}}</br>{{currentlyPlaying.album}}</p>
 		</div>
 		<!-- <player-controller id="playerController" url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller> -->
 		<div class="playerControlContainer">
-			<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="sliderSeek" value="{{playbackProgress}}">
+			<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="_sliderSeek" value="{{playbackProgress}}">
 			</paper-slider>
 			
 			<div class="playerControl">
 				<paper-icon-button icon="av:repeat" disabled></paper-icon-button>
-				<paper-icon-button class="larger" icon="av:skip-previous" on-click="previousClicked"></paper-icon-button>
-				<paper-icon-button class="larger" icon="av:play-arrow" on-click="playClicked" id="playButton"></paper-icon-button>
-				<paper-icon-button class="larger" on-click="nextClicked" icon="av:skip-next"></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-previous" on-click="_previousClicked" id="previousButton" ></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:play-arrow" on-click="_playClicked" id="playButton" ></paper-icon-button>
+				<paper-icon-button class="larger" icon="av:skip-next" on-click="_nextClicked"  id="nextButton" ></paper-icon-button>
 				<paper-icon-button icon="av:shuffle" disabled></paper-icon-button>
 			</div>
 		</div>	
@@ -96,7 +95,7 @@
 				playbackProgress:
 				{
 					value:0,
-					observer:"playbackProgressChanged"
+					observer:"_playbackProgressChanged"
 				},
 				currentlyPlaying:
 				{
@@ -106,31 +105,34 @@
 				{
 					value:false,
 					type:Boolean,
-					observer:"playingChanged"
+					observer:"_playingChanged"
 				}
 			},
-			ready:function()
+			ready: function()
 			{
-
+				this.$$('#playingAlbumCover img').src = '/pages/static/images/music_note.svg';
 			},
-			playClicked:function()
+			_playClicked:function()
 			{
-				this.playing = !this.playing;
-				this.fire("playClicked", {playing: this.playing});
-				if(this.playing)
+				if(this.currentlyPlaying)
 				{
-					this.$.playButton.icon = "av:pause";
-				}
-				else
-				{
-					this.$.playButton.icon = "av:play-arrow";	
+					this.playing = !this.playing;
+					this.fire("playClicked", {playing: this.playing});
+					if(this.playing)
+					{
+						this.$.playButton.icon = "av:pause";
+					}	
+					else
+					{
+						this.$.playButton.icon = "av:play-arrow";	
+					}
 				}
 			},
-			playbackProgressChanged:function(newValue, oldValue)
+			_playbackProgressChanged:function(newValue, oldValue)
 			{
 				this.$.playerProgress.value = newValue;
 			},
-			playingChanged:function(newValue,oldValue)
+			_playingChanged:function(newValue,oldValue)
 			{
 				if(newValue)
 				{
@@ -141,17 +143,28 @@
 					this.$.playButton.icon = "av:play-arrow";	
 				}
 			},
-			sliderSeek:function()
+			_sliderSeek:function()
 			{
 				this.fire("sliderSeeked", {progress:this.$.playerProgress.value})
 			},
-			previousClicked:function()
+			_previousClicked:function()
 			{
 				this.fire("previousClicked", {playing:this.playing});
 			},
-			nextClicked:function()
+			_nextClicked:function()
 			{
 				this.fire("nextClicked", {playing:this.playing});
+			},
+			_albumCoverProvided:function(param)
+			{
+				if (!param) 
+				{
+					return '/pages/static/images/music_note.svg';
+				}
+				else
+				{
+					return param;
+				};
 			}
 		});
 	</script>
