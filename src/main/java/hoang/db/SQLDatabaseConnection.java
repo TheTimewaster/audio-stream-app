@@ -7,6 +7,9 @@ import hoang.data.TrackObject;
 
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.Base64;
@@ -26,18 +30,36 @@ import org.json.JSONObject;
 
 public class SQLDatabaseConnection
 {
+	private String	 KEY_DB_DRIVER	= "db_driver";
+	private String	 KEY_DB_HOST	= "db_host";
+	private String	 KEY_DB_DEFAULT	= "db_default";
+	private String	 KEY_DB_USER	= "db_user";
+	private String	 KEY_DB_PW	    = "db_pw";
+
 	Connection	     conn;
 
-	SimpleDateFormat	SDF	= new SimpleDateFormat("mm:ss");
+	SimpleDateFormat	SDF	        = new SimpleDateFormat("mm:ss");
 
 	public SQLDatabaseConnection() throws DBConnectionException
 	{
+		InputStream inStream = null;
+		
+		Properties dbProperties = new Properties();
+		try
+        {
+			inStream = new FileInputStream(new File(System.getProperty("user.home") + "/properties/dbconfig_local.properties"));
+	        dbProperties.load(inStream);
+        } 
+		catch (IOException e1)
+        {
+			throw new DBConnectionException("Could not read properties! " + e1.getMessage());
+        }
+		
 		try
 		{
 			//root:5udI2EWa - system_music_db:xod31Alo
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection(
-			        "jdbc:mariadb://localhost:3306/music_db", "system_music_db", "xod31Alo");
+			Class.forName(dbProperties.getProperty(KEY_DB_DRIVER));
+			conn = DriverManager.getConnection(dbProperties.getProperty(KEY_DB_HOST) + dbProperties.getProperty(KEY_DB_DEFAULT), dbProperties.getProperty(KEY_DB_USER), dbProperties.getProperty(KEY_DB_PW));
 
 		} 
 		catch (ClassNotFoundException e)
@@ -49,29 +71,31 @@ public class SQLDatabaseConnection
 			throw new DBConnectionException(e.getMessage());
 		}
 	}
-	
+
 	public boolean authenticateUser(String _user, String _md5)
 	{
 		try
-        {
-	        PreparedStatement stmt = conn.prepareStatement("SELECT username, password FROM users WHERE username = '" + _user + "';");
-	        
-	        ResultSet rs = stmt.executeQuery();
-	        
-	        while(rs.next())
-	        {
-	        	if(rs.getString(1).equals(_user) && rs.getString(2).equals(_md5))
-	        	{
-	        		return true;
-	        	}
-	        }
-        } 
-		catch (SQLException e)
-        {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }
-		
+		{
+			PreparedStatement stmt = conn
+			        .prepareStatement("SELECT username, password FROM users WHERE username = '"
+			                + _user + "';");
+
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next())
+			{
+				if (rs.getString(1).equals(_user)
+				        && rs.getString(2).equals(_md5))
+				{
+					return true;
+				}
+			}
+		} catch (SQLException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
@@ -113,12 +137,14 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				AlbumObject albumObj = new AlbumObject(rs.getInt("ID"), rs.getString("name"), rs.getString("artist"), new Date(rs.getInt("year")), rs.getBytes("cover"));
-		
+				AlbumObject albumObj = new AlbumObject(rs.getInt("ID"),
+				        rs.getString("name"), rs.getString("artist"), new Date(
+				                rs.getInt("year")), rs.getBytes("cover"));
+
 				albumArray.put(albumObj.convertToJSON());
 			}
 		} catch (SQLException e)
-		{	
+		{
 			e.printStackTrace();
 
 			try
@@ -131,7 +157,7 @@ public class SQLDatabaseConnection
 
 			throw new DBConnectionException(e.getMessage());
 		}
-		
+
 		return albumArray;
 	}
 
@@ -140,8 +166,8 @@ public class SQLDatabaseConnection
 		PreparedStatement stmt;
 
 		List<TrackObject> trackArray = new ArrayList<TrackObject>();
-//		JSONObject albumObj = new JSONObject();
-		
+		// JSONObject albumObj = new JSONObject();
+
 		AlbumObject albumObj = null;
 		try
 		{
@@ -157,7 +183,9 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				albumObj = new AlbumObject(rs.getInt("ID"), rs.getString("name"), rs.getString("artist"), new Date(rs.getInt("year")), rs.getBytes("cover"));
+				albumObj = new AlbumObject(rs.getInt("ID"),
+				        rs.getString("name"), rs.getString("artist"), new Date(
+				                rs.getInt("year")), rs.getBytes("cover"));
 			}
 
 			stmt = conn
@@ -173,12 +201,14 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				TrackObject trackObj = new TrackObject(rs.getInt("ID"), rs.getString("track_name"), rs.getInt("track_no"), rs.getInt("track_length"));
+				TrackObject trackObj = new TrackObject(rs.getInt("ID"),
+				        rs.getString("track_name"), rs.getInt("track_no"),
+				        rs.getInt("track_length"));
 				trackArray.add(trackObj);
 			}
-			
+
 			albumObj.setTracks(trackArray);
-			
+
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -238,7 +268,8 @@ public class SQLDatabaseConnection
 		return artistArray;
 	}
 
-	public StreamingTrackObject getTrack(int _trackID) throws DBConnectionException
+	public StreamingTrackObject getTrack(int _trackID)
+	        throws DBConnectionException
 	{
 		PreparedStatement stmt;
 
@@ -255,7 +286,8 @@ public class SQLDatabaseConnection
 				InputStream stream = new ByteArrayInputStream(
 				        rs.getBytes("file"));
 
-				track = new StreamingTrackObject(rs.getInt("file_length"), stream);
+				track = new StreamingTrackObject(rs.getInt("file_length"),
+				        stream);
 			}
 		} catch (SQLException e)
 		{
@@ -294,7 +326,7 @@ public class SQLDatabaseConnection
 			while (rs.next())
 			{
 				artistObj.put("artist", rs.getString("artist"));
-				
+
 				if (!albumNameString.equals(rs.getString("album")))
 				{
 					if (albumNameString != null && albumObject != null)

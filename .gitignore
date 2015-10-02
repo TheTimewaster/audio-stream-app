@@ -1,6 +1,7 @@
 /target/
 /src/main/webapp/pages/bower_components/
 /.settings/org.*
+/.settings
 /.classpath
 /.project
 .DS_Store
