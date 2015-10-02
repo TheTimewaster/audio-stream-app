@@ -75,7 +75,7 @@
 		</div>
 		<!-- <player-controller id="playerController" url="{{concatStreamingURL(currentlyPlaying.file)}}"></player-controller> -->
 		<div class="playerControlContainer">
-			<paper-slider id="playerProgress" value="0" max="300" secondary-progress="100" on-change="_sliderSeek" value="{{playbackProgress}}">
+			<paper-slider id="playerProgress" value="0" max="300" on-change="_sliderSeek" value="{{playbackProgress}}">
 			</paper-slider>
 			
 			<div class="playerControl">
@@ -95,7 +95,8 @@
 				playbackProgress:
 				{
 					value:0,
-					observer:"_playbackProgressChanged"
+					observer:"_playbackProgressChanged",
+					notifiy: true
 				},
 				currentlyPlaying:
 				{

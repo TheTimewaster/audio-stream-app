@@ -130,6 +130,7 @@
 					<paper-toolbar class="medium-tall">
 						<iron-icon icon="av:library-music"></iron-icon>
 					  <span class="title">Polymer Audio Stream App</span>
+					  <paper-button on-click="logout">Logout</paper-button>
 					  <paper-tabs id="pageTabs" selected="{{selected}}" class="bottom self-end" on-click="tabClicked">
 				  		<paper-tab>ARTISTS</paper-tab>
 				  		<paper-tab>ALBUMS</paper-tab>
@@ -172,6 +173,10 @@
 					this.$$("#albumView").resetView();
 				}
 				this.selected = this.$$("#pageTabs").selected;
+			},
+			logout:function(e)
+			{
+				window.location.replace("/j_spring_security_logout");
 			}
 		});
 	</script>

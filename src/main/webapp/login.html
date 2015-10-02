@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Polymer Audio Stream App - Login</title>
+	<script src="pages/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+	<link rel="import" href="pages/bower_components/paper-styles/paper-styles.html">
+	<link rel="import" href="pages/bower_components/paper-input/paper-input.html">
+	<link rel="import" href="pages/bower_components/paper-material/paper-material.html">
+	<link rel="import" href="pages/bower_components/paper-button/paper-button.html">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style type="text/css">
+		html,body{
+			font-family: 'Roboto', 'Helvetica', 'Segoe UI Light', 'Arial', sans-serif;
+			margin: 0;
+			background-color: #2196F3;
+			height: 100%;
+		}
+		#loginForm
+		{
+			width: 320px;
+			padding: 16px;
+			background-color: #FAFAFA;
+			border-radius: 2px;
+			margin-bottom: 24px;
+		}
+		paper-input
+		{
+			margin-bottom: 16px;
+		}
+		#header
+		{
+			text-align: center;
+			color: white;
+			font-weight: 400;
+		}
+		paper-button
+		{
+			background:#2196F3;
+			color: white;
+		}
+		#loginButton
+		{
+			margin-top: 32px;
+		}
+		#loginContainer
+		{
+			display:flex;
+			flex-direction:column;
+			justify-content:center;
+			align-items:center;
+			width:100%;
+			height:100%;
+		}
+		#infoText
+		{
+			color: white;
+			font-size: 0.8em;
+			text-align: center;
+			line-height: 1.4em;
+		}
+		a
+		{
+			color:white;
+		}
+	</style>
+</head>
+<body>
+	<div id="loginContainer">
+		<h1 id="header">Polymer Audio Stream App</h1>
+		<paper-material elevation="2" id="loginForm">
+			<paper-input id="username" label="Username"></paper-input>
+			<paper-input id="password" label="Password" type="password"></paper-input>
+			<paper-button id="loginButton">Login</paper-button>
+		</paper-material>
+		<div id="infoText">
+			2015 - Tu Hoang Thanh. Built with <a target="_blank" href="https://www.polymer-project.org/1.0/">Polymer</a>.</br> 
+			This project is open source and is hosted on <a target="_blank" href="https://github.com/TheTimewaster/audio-stream-app">GitHub</a>.</br> 
+			Application hosted by <a target="_blank" href="https://www.openshift.com/">OpenShift Platform</a>.
+		</div>
+	</div>
+	<script type="text/javascript">
+		document.getElementById("loginButton").addEventListener('click',function(e)
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "/j_spring_security_check?username=" + document.getElementById("username").value + "&password=" + document.getElementById("password").value);
+			xhr.onreadystatechange = function()
+			{
+				if(this.readyState == 4)
+				{
+					if(JSON.parse(this.response).success)
+					{
+						window.location.replace("/pages/index.html");
+					}
+					else
+					{
+						document.getElementById("username").invalid = true;
+						document.getElementById("password").invalid = true;
+					}
+				}
+			}
+			xhr.send();
+		});
+	</script>
+</body>
+</html>

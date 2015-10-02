@@ -8,7 +8,7 @@
   <description></description>
   <welcome-file-list>
 	  <welcome-file>
-	  	pages/
+	  	login.html
 	  </welcome-file>
   </welcome-file-list>
   
@@ -38,5 +38,29 @@
   	    <servlet-name>meta-data</servlet-name>
   	    <url-pattern>/metadata/getDocument</url-pattern>
   	</servlet-mapping> -->
+  	
+  	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring-security.xml
+		</param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+	<!-- Spring Security -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 </web-app>

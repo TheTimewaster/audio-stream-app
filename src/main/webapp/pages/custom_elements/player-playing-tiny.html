@@ -69,7 +69,7 @@
 			playClicked:function()
 			{
 				this.playing = !this.playing;
-				this.fire("playClicked", {playing: this.playing});
+				this.fire("playButtonClicked", {playing: this.playing});
 				if(this.playing)
 				{
 					this.$.playButton.icon = "av:pause";

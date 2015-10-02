@@ -23,11 +23,6 @@
 	    <version>3.0.1</version>
 	    <scope>provided</scope>
 	</dependency>
-	<dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver</artifactId>
-        <version>3.0.2</version>
-    </dependency>
     <dependency>
 		<groupId>org.json</groupId>
 		<artifactId>json</artifactId>
@@ -54,7 +49,31 @@
 		<artifactId>commons-codec</artifactId>
 		<version>1.10</version>
 	</dependency>
-    
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-core</artifactId>
+		<version>4.0.2.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-web</artifactId>
+		<version>4.2.1.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+		<version>1.2</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-config</artifactId>
+		<version>4.0.2.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-web</artifactId>
+		<version>4.0.2.RELEASE</version>
+	</dependency>
   </dependencies>
   <build>
     <finalName>app-audio-stream</finalName>

@@ -1,7 +1,7 @@
 package hoang.server;
 
 
-import hoang.data.TrackObject;
+import hoang.data.StreamingTrackObject;
 import hoang.db.DBConnectionException;
 import hoang.db.DatabaseConnectionWrapper;
 import hoang.db.SQLDatabaseConnection;
@@ -40,7 +40,7 @@ public class StreamingProviderServlet
 		
 		int contentLength = 0;
 		IStreamingOutput streamer = null;
-		TrackObject track = null;
+		StreamingTrackObject track = null;
 		SQLDatabaseConnection conn;
 		
         try

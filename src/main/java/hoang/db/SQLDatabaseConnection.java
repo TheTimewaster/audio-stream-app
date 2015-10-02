@@ -1,6 +1,8 @@
 package hoang.db;
 
 
+import hoang.data.AlbumObject;
+import hoang.data.StreamingTrackObject;
 import hoang.data.TrackObject;
 
 import java.awt.Color;
@@ -12,7 +14,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.Base64;
@@ -44,6 +48,31 @@ public class SQLDatabaseConnection
 		{
 			throw new DBConnectionException(e.getMessage());
 		}
+	}
+	
+	public boolean authenticateUser(String _user, String _md5)
+	{
+		try
+        {
+	        PreparedStatement stmt = conn.prepareStatement("SELECT username, password FROM users WHERE username = '" + _user + "';");
+	        
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        while(rs.next())
+	        {
+	        	if(rs.getString(1).equals(_user) && rs.getString(2).equals(_md5))
+	        	{
+	        		return true;
+	        	}
+	        }
+        } 
+		catch (SQLException e)
+        {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		
+		return false;
 	}
 
 	public boolean isConnSuccess()
@@ -84,20 +113,12 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				JSONObject obj = new JSONObject();
-				obj.put("id", rs.getInt("ID"));
-				obj.put("album", rs.getString("name"));
-				obj.put("artist", rs.getString("artist"));
-				obj.put("year", rs.getInt("year"));
-				// decode to base64
-				String encodedCoverImg = "data:image/png;base64,"
-				        + Base64.encodeBase64String(rs.getBytes("cover"));
-				obj.put("coverImg", new String(encodedCoverImg));
-
-				albumArray.put(obj);
+				AlbumObject albumObj = new AlbumObject(rs.getInt("ID"), rs.getString("name"), rs.getString("artist"), new Date(rs.getInt("year")), rs.getBytes("cover"));
+		
+				albumArray.put(albumObj.convertToJSON());
 			}
 		} catch (SQLException e)
-		{
+		{	
 			e.printStackTrace();
 
 			try
@@ -110,7 +131,7 @@ public class SQLDatabaseConnection
 
 			throw new DBConnectionException(e.getMessage());
 		}
-
+		
 		return albumArray;
 	}
 
@@ -118,8 +139,10 @@ public class SQLDatabaseConnection
 	{
 		PreparedStatement stmt;
 
-		JSONArray trackArray = new JSONArray();
-		JSONObject albumObj = new JSONObject();
+		List<TrackObject> trackArray = new ArrayList<TrackObject>();
+//		JSONObject albumObj = new JSONObject();
+		
+		AlbumObject albumObj = null;
 		try
 		{
 			stmt = conn
@@ -134,12 +157,7 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				albumObj.put("albID", rs.getString("ID"));
-				albumObj.put("album", rs.getString("name"));
-				albumObj.put("artist", rs.getObject("artist"));
-				String encodedCoverImg = "data:image/png;base64,"
-				        + Base64.encodeBase64String(rs.getBytes("cover"));
-				albumObj.put("coverImg", new String(encodedCoverImg));
+				albumObj = new AlbumObject(rs.getInt("ID"), rs.getString("name"), rs.getString("artist"), new Date(rs.getInt("year")), rs.getBytes("cover"));
 			}
 
 			stmt = conn
@@ -155,16 +173,12 @@ public class SQLDatabaseConnection
 
 			while (rs.next())
 			{
-				JSONObject trackObj = new JSONObject();
-				trackObj.put("trackID", rs.getInt("ID"));
-				trackObj.put("track", rs.getInt("track_no"));
-				trackObj.put("name", rs.getString("track_name"));
-				trackObj.put("length",
-				        SDF.format(new Date(rs.getInt("track_length"))));
-				trackArray.put(trackObj);
+				TrackObject trackObj = new TrackObject(rs.getInt("ID"), rs.getString("track_name"), rs.getInt("track_no"), rs.getInt("track_length"));
+				trackArray.add(trackObj);
 			}
-
-			albumObj.put("tracks", trackArray);
+			
+			albumObj.setTracks(trackArray);
+			
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -179,7 +193,7 @@ public class SQLDatabaseConnection
 			throw new DBConnectionException(e.getMessage());
 		}
 
-		return albumObj;
+		return albumObj.convertToJSON();
 	}
 
 	public JSONArray getArtists() throws DBConnectionException
@@ -224,11 +238,11 @@ public class SQLDatabaseConnection
 		return artistArray;
 	}
 
-	public TrackObject getTrack(int _trackID) throws DBConnectionException
+	public StreamingTrackObject getTrack(int _trackID) throws DBConnectionException
 	{
 		PreparedStatement stmt;
 
-		TrackObject track = null;
+		StreamingTrackObject track = null;
 
 		try
 		{
@@ -241,7 +255,7 @@ public class SQLDatabaseConnection
 				InputStream stream = new ByteArrayInputStream(
 				        rs.getBytes("file"));
 
-				track = new TrackObject(rs.getInt("file_length"), stream);
+				track = new StreamingTrackObject(rs.getInt("file_length"), stream);
 			}
 		} catch (SQLException e)
 		{

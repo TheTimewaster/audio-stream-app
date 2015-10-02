@@ -48,7 +48,7 @@
 				{
 					type:Number,
 					value:0,
-					notify:true
+					observer:"_playBackProgressChanged"
 				}
 			},
 			listeners:
@@ -57,7 +57,7 @@
 				'playerSmall.sliderSeeked':'playerSliderSeeked',
 				'playerSmall.previousClicked':'playerPreviousClicked',
 				'playerSmall.nextClicked':'playerNextClicked',
-				'playerTiny.playClicked':'playerPlayClicked',
+				'playerTiny.playButtonClicked':'playerPlayClicked',
 				'playerTiny.changeToSmall':'changeToSmall'
 			},
 			ready:function()
@@ -67,9 +67,9 @@
 				audioElement.ontimeupdate = function()
 				{
 					if(Math.round(300 * audioElement.currentTime/audioElement.duration) > this.parentElement.playBackProgress)
-						{
-							this.parentElement.playBackProgress = Math.round(300 * audioElement.currentTime/audioElement.duration);
-						}
+					{
+						this.parentElement.playBackProgress = Math.round(300 * audioElement.currentTime/audioElement.duration);
+					}
 				}
 
 				//track ended event
@@ -100,20 +100,15 @@
 			playBackRunning:function()
 			{
 				if(Math.round(300 * audioElement.currentTime/audioElement.duration) > this.playBackProgress)
-					{
-						this.playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
-						console.log(this.playBackProgress);
-					}
+				{
+					this.playBackProgress = 300 * audioElement.currentTime/audioElement.duration;
+				}
 			},
 			playBackEnded:function()
 			{
 				if(audioElement.currentTime == audioElement.duration)
 		   		{
 		   			this.parentElement.fire("trackEnded");
-		   		}
-		   		else
-		   		{
-
 		   		}
 			},
 			playerPlayClicked:function(event)
@@ -153,6 +148,10 @@
 				this.playBackProgress = 0;
 				this.$.audioElement.load();
 			},
+			// _playBackProgressChanged:function(oldValue, newValue)
+			// {
+			// 	console.log(newValue);
+			// },
 			changeToSmall:function(event)
 			{
 				this.changePlayerMode("small");
