@@ -53,13 +53,13 @@
 		</paper-toolbar>
 		<div class="content">
 			<template is="dom-repeat" items="{{playList.tracks}}" as="track">
-				<paper-item class="playListRow" on-click="playerListTrackClicked">
+				<paper-item class="playListRow" on-click="_playerListTrackClicked">
 					<div class="cover">
 						<img src="{{track.cover}}" width="48">
 					</div>
 					<paper-item-body two-line>
 						<span>{{track.name}}</span>
-						<span secondary>{{concatAlbumAndArtistString(track.artist,track.album)}}</span>
+						<span secondary>{{_concatAlbumAndArtistString(track.artist,track.album)}}</span>
 					</paper-item-body>
 					<span>{{track.length}}</span>
 				</paper-item>
@@ -80,7 +80,7 @@
 				playList:
 				{
 					type:Object,
-					observer:"playListChanged"
+					observer:"_playListChanged"
 				},
 				visible:
 				{
@@ -92,7 +92,7 @@
 			{
 				this.visible = false;
 			},
-			playListChanged:function(newValue, oldValue)
+			_playListChanged:function(newValue, oldValue)
 			{
 				if(newValue != undefined)
 				{
@@ -115,7 +115,7 @@
 
 				// return this.visible;
 			},
-			concatAlbumAndArtistString:function(artist, album)
+			_concatAlbumAndArtistString:function(artist, album)
 			{
 				return artist + " - " + album;
 			},
@@ -130,11 +130,7 @@
 					this.playingTrack = currentList[nextIndex];
 				}
 			},
-			isCurrentPlayingTrack:function(track)
-			{
-				return (this.playingTrack == track);
-			},
-			playerListTrackClicked:function(event)
+			_playerListTrackClicked:function(event)
 			{
 				this.fire("playingTrackUpdate", {index:event.model.index});
 			}

@@ -8,6 +8,7 @@
 		#playerTinyContainer
 		{
 			display:flex;
+			display:-webkit-flex;
 			/*align-self: flex-end;*/
 			width:100%;
 			height:100%;
@@ -42,7 +43,7 @@
 				<span>{{currentlyPlaying.name}}</span>
 				<span secondary>{{currentlyPlaying.artist}}</span>
 			</paper-item-body>
-			<paper-icon-button id="playButton" on-click="playClicked" icon="av:play-arrow"></paper-icon-button>
+			<paper-icon-button id="playButton" on-click="_playClicked" icon="av:play-arrow"></paper-icon-button>
 		</paper-item>
 		
 	</template>
@@ -59,14 +60,14 @@
 				{
 					value:false,
 					type:Boolean,
-					observer:"playingChanged"
+					observer:"_playingChanged"
 				}
 			},
 			changeToSmall:function() 
 			{
 				this.fire("changeToSmall");
 			},
-			playClicked:function()
+			_playClicked:function()
 			{
 				this.playing = !this.playing;
 				this.fire("playButtonClicked", {playing: this.playing});
@@ -79,7 +80,7 @@
 					this.$.playButton.icon = "av:play-arrow";	
 				}
 			},
-			playingChanged:function(newValue,oldValue)
+			_playingChanged:function(newValue,oldValue)
 			{
 				if(newValue)
 				{

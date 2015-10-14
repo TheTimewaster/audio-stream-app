@@ -6,6 +6,7 @@
 	<style>
 		:host {
 			display: flex;
+			display: -webkit-flex;
 			width:100%;
 			min-height:60px;
 			height:10%;
@@ -47,8 +48,7 @@
 				playBackProgress:
 				{
 					type:Number,
-					value:0,
-					observer:"_playBackProgressChanged"
+					value:0
 				}
 			},
 			listeners:
@@ -148,10 +148,6 @@
 				this.playBackProgress = 0;
 				this.$.audioElement.load();
 			},
-			// _playBackProgressChanged:function(oldValue, newValue)
-			// {
-			// 	console.log(newValue);
-			// },
 			changeToSmall:function(event)
 			{
 				this.changePlayerMode("small");

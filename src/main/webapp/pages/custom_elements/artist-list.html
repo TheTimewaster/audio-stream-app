@@ -14,6 +14,7 @@
 			cursor:pointer;
 			border-radius: 2px;
 			display: flex;
+			display: -webkit-flex;
     		justify-content: center;
     		align-items: center;
 		}
@@ -21,7 +22,9 @@
 		{
 			text-align: center;
 			width: 100%;
-    		@apply(--paper-font-subhead);
+			font-size: 16px;
+			font-weight: 400;
+			line-height: 24px;
 		}
 		.innerName
 		{
@@ -42,7 +45,7 @@
 		<iron-ajax id="artistAjax" auto url="/api/metadata/artists" handle-as="json" last-response="{{data}}"></iron-ajax>
 		<template is="dom-repeat" items="{{data}}" as="artist" id="artistList">
 			<div class="artistListEntry">
-				<paper-material elevation="1" class="artistCard" style$="{{artist.color}}" on-click="artistClicked">
+				<paper-material elevation="1" class="artistCard" style$="{{artist.color}}" on-click="_artistClicked">
 					<span class="innerName">{{_getFirstLetter(artist.artist)}}</span>
 					</paper-material>
 				<div class="artistName" on-click="artistClicked">
@@ -58,7 +61,7 @@
 			{
 				return artistName.charAt(0);
 			},
-			artistClicked:function(event)
+			_artistClicked:function(event)
 			{
 				this.fire("artist-clicked", {obj:event.model.artist});
 			},

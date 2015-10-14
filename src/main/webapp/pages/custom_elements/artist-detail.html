@@ -29,7 +29,9 @@
 			width: 100%;
 			height:100px;
 			display: flex;
+			display: -webkit-flex;
 			align-items:flex-end;
+			-webkit-align-items:flex-end;
 		}
 		#artistPlay
 		{
@@ -62,12 +64,12 @@
 			<div id="artistHero">
 				<span id="artistHeroText">{{artist.artist}}</span>
 			</div>
-			<paper-fab id="artistPlay" on-click="artistPlayClicked" icon="av:play-arrow"></paper-fab>
+			<paper-fab id="artistPlay" on-click="_artistPlayClicked" icon="av:play-arrow"></paper-fab>
 		</div>
-		<template is="dom-repeat" items="{{artist.albums}}" as="album" id="artistAlbumList">
-			<album-detail album="{{album}}"></album-detail>
-		</template>
-		<iron-ajax id="artistAjax" handle-as="json" on-response="responseReceived"></iron-ajax>
+			<template is="dom-repeat" items="{{artist.albums}}" as="album" id="artistAlbumList">
+				<album-detail album="{{album}}"></album-detail>
+			</template>
+		<iron-ajax id="artistAjax" handle-as="json" on-response="_responseReceived"></iron-ajax>
 	</template>
 	<script>
 		Polymer({
@@ -79,17 +81,13 @@
 					type:Object
 				}
 			},
-			_getFirstLetter:function (artistName) 
-			{
-				return artistName.charAt(0);
-			},
 			openDetail:function(arg)
 			{
 				this.artist = arg
-				this.$$("#artistAjax").url = "/api/metadata/artists/" + arg.artistID;
-				this.$$("#artistAjax").generateRequest();
+				this.$.artistAjax.url = "/api/metadata/artists/" + arg.artistID;
+				this.$.artistAjax.generateRequest();
 			},
-			responseReceived:function(event)
+			_responseReceived:function(event)
 			{
 				this.artist = this.$.artistAjax.lastResponse;
 			},
