@@ -3,6 +3,7 @@
 	<style>
 		:host {
 			display: block;
+			width:100%;
 		}
 		#artistCard
 		{
@@ -21,27 +22,29 @@
 			display: inline-flex;
 			display: -webkit-inline-flex;
 			width:100%;
-			border-bottom:1px solid var(--paper-grey-300);
 			margin-bottom: 24px;
 		}
 		#artistHero
 		{
-			width: 100%;
-			height:100px;
+			width: 90%;
+			height:84px;
 			display: flex;
 			display: -webkit-flex;
 			align-items:flex-end;
 			-webkit-align-items:flex-end;
+			margin-left:auto;
+			margin-right:auto;
+			border-bottom:1px solid var(--paper-grey-300);
 		}
 		#artistPlay
 		{
 			position:absolute;
-			top:73px;
+			top:55px;
 			right:6%;
 		}
 		#artistHeroText
 		{
-			font-size: 64px;
+			font-size: 48px;
 			color: black;
 			margin-left: 16px;
 			margin-bottom: 8px;
@@ -63,8 +66,8 @@
 		<div id="artistHeader" >
 			<div id="artistHero">
 				<span id="artistHeroText">{{artist.artist}}</span>
+				<paper-fab id="artistPlay" on-click="_artistPlayClicked" icon="av:play-arrow"></paper-fab>
 			</div>
-			<paper-fab id="artistPlay" on-click="_artistPlayClicked" icon="av:play-arrow"></paper-fab>
 		</div>
 			<template is="dom-repeat" items="{{artist.albums}}" as="album" id="artistAlbumList">
 				<album-detail album="{{album}}"></album-detail>
